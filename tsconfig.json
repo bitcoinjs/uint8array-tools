@@ -1,14 +1,16 @@
 {
   "compilerOptions": {
     "target": "ESNEXT",
-    "module": "commonjs",
+    "module": "ES2020",
     "checkJs": true,
     "declaration": true,
     "outDir": "./src",
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noPropertyAccessFromIndexSignature": true
+    "noPropertyAccessFromIndexSignature": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true
   },
   "include": ["ts_src/*.ts"],
   "exclude": [

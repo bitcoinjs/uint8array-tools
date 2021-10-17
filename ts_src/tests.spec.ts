@@ -27,11 +27,11 @@ describe(`Uint8Array tools`, () => {
     describe(name, () => {
       it(`should parse hex with fromHex`, () => {
         expect(tools.fromHex(hex)).toEqual(bytes);
+        expect((tools.fromHex as any)()).toEqual(f([]));
       });
       for (const [bhex, result, reason] of brokenHexes) {
         it(`should abort parsing hex ${bhex} because of ${reason}`, () => {
           expect(tools.fromHex(bhex)).toEqual(result);
-          expect((tools.fromHex as any)()).toEqual(f([]));
         });
       }
       it(`should output hex with toHex`, () => {

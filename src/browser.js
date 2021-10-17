@@ -1,6 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.compare = exports.fromHex = exports.toHex = void 0;
 const HEX_STRINGS = "0123456789abcdefABCDEF";
 const HEX_CODES = HEX_STRINGS.split("").map((c) => c.codePointAt(0));
 const HEX_CODEPOINTS = Array(256)
@@ -17,11 +14,10 @@ const DECODER = new TextDecoder("ascii");
 // One optimizes for length of the bytes, and uses TextDecoder.
 // One optimizes for iteration count, and appends strings.
 // This removes the overhead of TextDecoder.
-function toHex(bytes) {
+export function toHex(bytes) {
     const b = bytes || new Uint8Array();
     return b.length > 512 ? _toHexLengthPerf(b) : _toHexIterPerf(b);
 }
-exports.toHex = toHex;
 function _toHexIterPerf(bytes) {
     let s = "";
     for (let i = 0; i < bytes.length; ++i) {
@@ -41,7 +37,7 @@ function _toHexLengthPerf(bytes) {
 // Mimics Buffer.from(x, 'hex') logic
 // Stops on first non-hex string and returns
 // https://github.com/nodejs/node/blob/v14.18.1/src/string_bytes.cc#L246-L261
-function fromHex(hexString) {
+export function fromHex(hexString) {
     const hexBytes = ENCODER.encode(hexString || "");
     const resultBytes = new Uint8Array(Math.floor(hexBytes.length / 2));
     let i;
@@ -55,9 +51,8 @@ function fromHex(hexString) {
     }
     return i === resultBytes.length ? resultBytes : resultBytes.slice(0, i);
 }
-exports.fromHex = fromHex;
 // Same behavior as Buffer.compare()
-function compare(v1, v2) {
+export function compare(v1, v2) {
     const minLength = Math.min(v1.length, v2.length);
     for (let i = 0; i < minLength; ++i) {
         if (v1[i] !== v2[i]) {
@@ -66,4 +61,3 @@ function compare(v1, v2) {
     }
     return v1.length === v2.length ? 0 : v1.length > v2.length ? 1 : -1;
 }
-exports.compare = compare;

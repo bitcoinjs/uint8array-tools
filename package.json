@@ -2,8 +2,17 @@
   "name": "uint8array-tools",
   "version": "0.0.2",
   "description": "A library for dealing with Uint8Arrays.",
+  "homepage": "https://github.com/bitcoinjs/uint8array-tools#readme",
+  "bugs": {
+    "url": "https://github.com/bitcoinjs/uint8array-tools/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bitcoinjs/uint8array-tools.git"
+  },
   "main": "src/index.js",
   "types": "src/index.d.ts",
+  "type": "module",
   "scripts": {
     "build": "tsc",
     "coverage": "npm run unit -- --coverage",
@@ -16,10 +25,6 @@
   },
   "browser": {
     "./src/index.js": "./src/browser.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git@github.com-bitbank:bitcoinjs/uint8array-tools.git"
   },
   "keywords": [
     "uint8array",
