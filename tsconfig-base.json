@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "checkJs": true,
+    "declaration": false,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true
+  },
+  "include": ["ts_src/*.ts"],
+  "exclude": [
+    "node_modules",
+    "src",
+    "coverage",
+    "ts_src/*.spec.ts",
+    "ts_src/*.test.ts"
+  ]
+}

@@ -1,21 +1,8 @@
 {
-  "compilerOptions": {
-    "target": "ESNEXT",
-    "module": "ES2020",
-    "checkJs": true,
-    "declaration": true,
-    "outDir": "./src",
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "moduleResolution": "node",
-    "esModuleInterop": true
-  },
-  "include": ["ts_src/*.ts"],
-  "exclude": [
-    "node_modules/**/*.ts",
-    "ts_src/*.spec.ts",
-    "ts_src/*.test.ts"
-  ]
+    "extends": "./tsconfig-base.json",
+    "compilerOptions": {
+        "module": "esnext",
+        "outDir": "src/mjs",
+        "target": "esnext",
+    }
 }
