@@ -10,11 +10,10 @@
     "type": "git",
     "url": "https://github.com/bitcoinjs/uint8array-tools.git"
   },
-  "main": "src/cjs",
-  "types": "src/cjs",
-  "module": "src/mjs",
+  "main": "src/cjs/index.js",
+  "types": "src/cjs/index.d.ts",
   "scripts": {
-    "build": "rm -rf src/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && ./fixup.sh",
+    "build": "rm -rf src/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
     "coverage": "npm run unit -- --coverage",
     "eslint": "eslint ts_src/*.ts",
     "format": "npm run eslint -- --fix",
@@ -24,8 +23,12 @@
     "unit": "jest --config=jest.json --runInBand"
   },
   "exports": {
-    "import": "./src/mjs/index.js",
-    "require": "./src/cjs/index.js"
+    "node": {
+      "module": "./src/mjs/index.js",
+      "require": "./src/cjs/index.js"
+    },
+    "browser": "./src/mjs/browser.js",
+    "default": "./src/mjs/index.js"
   },
   "keywords": [
     "uint8array",
