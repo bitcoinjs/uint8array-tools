@@ -10,6 +10,7 @@
     "type": "git",
     "url": "https://github.com/bitcoinjs/uint8array-tools.git"
   },
+  "main": "./src/cjs/index.cjs",
   "exports": {
     "node": {
       "module": "./src/mjs/index.js",
