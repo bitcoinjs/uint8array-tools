@@ -18,6 +18,10 @@ const bytes3 = f([0x21, 0x7e]);
 const utf8 = "!~";
 const longBytes2 = new Uint8Array(513).fill(0x61);
 const longUtf8 = "a".repeat(513);
+const testBytes = f([
+  227, 129, 147, 227, 130, 147, 227, 129, 171, 227, 129, 161, 227, 129, 175,
+]);
+const str = "こんにちは";
 
 const brokenHexes = [
   [" ff00", f([]), "leading space"],
@@ -45,6 +49,7 @@ describe(`Uint8Array tools`, () => {
       });
       it(`should output utf8 with toUtf8`, () => {
         expect(tools.toUtf8(bytes3)).toEqual(utf8);
+        expect(tools.toUtf8(testBytes)).toEqual(str);
         expect(tools.toUtf8(longBytes2)).toEqual(longUtf8);
         expect((tools.toUtf8 as any)()).toEqual("");
       });

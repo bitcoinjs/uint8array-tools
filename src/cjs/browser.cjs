@@ -12,7 +12,7 @@ const HEX_CODEPOINTS = Array(256)
     return index < 0 ? undefined : index < 16 ? index : index - 6;
 });
 const ENCODER = new TextEncoder();
-const DECODER = new TextDecoder("ascii");
+const DECODER = new TextDecoder();
 function toUtf8(bytes) {
     return DECODER.decode(bytes);
 }
