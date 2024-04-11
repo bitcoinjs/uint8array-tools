@@ -11,6 +11,10 @@ const HEX_CODEPOINTS: (number | undefined)[] = Array(256)
 const ENCODER = new TextEncoder();
 const DECODER = new TextDecoder("ascii");
 
+export function toUtf8(bytes: Uint8Array): string {
+  return DECODER.decode(bytes);
+}
+
 // There are two implementations.
 // One optimizes for length of the bytes, and uses TextDecoder.
 // One optimizes for iteration count, and appends strings.

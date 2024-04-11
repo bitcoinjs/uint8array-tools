@@ -14,6 +14,10 @@ const bytes2Larger = f([0xff, 0x01, 0x00]);
 const bytes2LargerLeft = f([0x00, 0xff, 0x01]);
 const longBytes = new Uint8Array(513).fill(0xfa);
 const longHex = "fa".repeat(513);
+const bytes3 = f([0x21, 0x7e]);
+const utf8 = "!~";
+const longBytes2 = new Uint8Array(513).fill(0x61);
+const longUtf8 = "a".repeat(513);
 
 const brokenHexes = [
   [" ff00", f([]), "leading space"],
@@ -38,6 +42,11 @@ describe(`Uint8Array tools`, () => {
         expect(tools.toHex(bytes)).toEqual(hex);
         expect(tools.toHex(longBytes)).toEqual(longHex);
         expect((tools.toHex as any)()).toEqual("");
+      });
+      it(`should output utf8 with toUtf8`, () => {
+        expect(tools.toUtf8(bytes3)).toEqual(utf8);
+        expect(tools.toUtf8(longBytes2)).toEqual(longUtf8);
+        expect((tools.toUtf8 as any)()).toEqual("");
       });
       it(`should compare Uint8Arrays`, () => {
         expect(tools.compare(bytes, bytes2)).toBe(-1);

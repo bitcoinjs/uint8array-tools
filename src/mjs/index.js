@@ -1,3 +1,6 @@
+export function toUtf8(bytes) {
+    return Buffer.from(bytes || []).toString();
+}
 export function toHex(bytes) {
     return Buffer.from(bytes || []).toString("hex");
 }

@@ -10,6 +10,9 @@ const HEX_CODEPOINTS = Array(256)
 });
 const ENCODER = new TextEncoder();
 const DECODER = new TextDecoder("ascii");
+export function toUtf8(bytes) {
+    return DECODER.decode(bytes);
+}
 // There are two implementations.
 // One optimizes for length of the bytes, and uses TextDecoder.
 // One optimizes for iteration count, and appends strings.
