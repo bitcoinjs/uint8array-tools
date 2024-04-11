@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.compare = exports.fromHex = exports.toHex = void 0;
+exports.compare = exports.fromHex = exports.toHex = exports.toUtf8 = void 0;
 const HEX_STRINGS = "0123456789abcdefABCDEF";
 const HEX_CODES = HEX_STRINGS.split("").map((c) => c.codePointAt(0));
 const HEX_CODEPOINTS = Array(256)
@@ -12,7 +12,11 @@ const HEX_CODEPOINTS = Array(256)
     return index < 0 ? undefined : index < 16 ? index : index - 6;
 });
 const ENCODER = new TextEncoder();
-const DECODER = new TextDecoder("ascii");
+const DECODER = new TextDecoder();
+function toUtf8(bytes) {
+    return DECODER.decode(bytes);
+}
+exports.toUtf8 = toUtf8;
 // There are two implementations.
 // One optimizes for length of the bytes, and uses TextDecoder.
 // One optimizes for iteration count, and appends strings.
