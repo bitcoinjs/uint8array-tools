@@ -10,8 +10,8 @@ export function fromHex(hexString: string): Uint8Array {
   return Uint8Array.from(Buffer.from(hexString || "", "hex"));
 }
 
-export function fromUtf8(hexString: string): Uint8Array {
-  return Uint8Array.from(Buffer.from(hexString || ""));
+export function fromUtf8(utf8String: string): Uint8Array {
+  return Uint8Array.from(Buffer.from(utf8String || ""));
 }
 
 export type CompareResult = -1 | 0 | 1;

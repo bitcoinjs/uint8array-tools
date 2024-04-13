@@ -13,8 +13,8 @@ function fromHex(hexString) {
     return Uint8Array.from(Buffer.from(hexString || "", "hex"));
 }
 exports.fromHex = fromHex;
-function fromUtf8(hexString) {
-    return Uint8Array.from(Buffer.from(hexString || ""));
+function fromUtf8(utf8String) {
+    return Uint8Array.from(Buffer.from(utf8String || ""));
 }
 exports.fromUtf8 = fromUtf8;
 function compare(v1, v2) {
