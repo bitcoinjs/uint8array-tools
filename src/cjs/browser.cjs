@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.compare = exports.fromHex = exports.toHex = exports.toUtf8 = void 0;
+exports.compare = exports.fromHex = exports.fromUtf8 = exports.toHex = exports.toUtf8 = void 0;
 const HEX_STRINGS = "0123456789abcdefABCDEF";
 const HEX_CODES = HEX_STRINGS.split("").map((c) => c.codePointAt(0));
 const HEX_CODEPOINTS = Array(256)
@@ -42,6 +42,10 @@ function _toHexLengthPerf(bytes) {
     }
     return DECODER.decode(hexBytes);
 }
+function fromUtf8(utf8String) {
+    return ENCODER.encode(utf8String);
+}
+exports.fromUtf8 = fromUtf8;
 // Mimics Buffer.from(x, 'hex') logic
 // Stops on first non-hex string and returns
 // https://github.com/nodejs/node/blob/v14.18.1/src/string_bytes.cc#L246-L261

@@ -42,6 +42,10 @@ describe(`Uint8Array tools`, () => {
           expect(tools.fromHex(bhex)).toEqual(result);
         });
       }
+      it(`should parse hex with fromUtf8`, () => {
+        expect(tools.fromUtf8(utf8)).toEqual(bytes3);
+        expect((tools.fromUtf8 as any)()).toEqual(f([]));
+      });
       it(`should output hex with toHex`, () => {
         expect(tools.toHex(bytes)).toEqual(hex);
         expect(tools.toHex(longBytes)).toEqual(longHex);
