@@ -37,6 +37,9 @@ function _toHexLengthPerf(bytes) {
     }
     return DECODER.decode(hexBytes);
 }
+export function fromUtf8(utf8String) {
+    return ENCODER.encode(utf8String);
+}
 // Mimics Buffer.from(x, 'hex') logic
 // Stops on first non-hex string and returns
 // https://github.com/nodejs/node/blob/v14.18.1/src/string_bytes.cc#L246-L261
