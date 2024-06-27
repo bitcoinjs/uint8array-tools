@@ -22,8 +22,8 @@ export function writeUInt8(
   offset: number,
   value: bigint
 ): void {
-  const buf = Buffer.from(buffer);
-  buf.writeUInt8(Number(value), offset);
+  const buf = Buffer.alloc(1);
+  buf.writeUInt8(Number(value), 0);
   buffer.set(Uint8Array.from(buf), offset);
 }
 
@@ -38,9 +38,9 @@ export function writeUInt16(
   const buf = Buffer.alloc(2);
 
   if (littleEndian === "LE") {
-    buf.writeUInt16LE(Number(value), offset);
+    buf.writeUInt16LE(Number(value), 0);
   } else {
-    buf.writeUInt16BE(Number(value), offset);
+    buf.writeUInt16BE(Number(value), 0);
   }
   buffer.set(Uint8Array.from(buf), offset);
 }
@@ -56,9 +56,9 @@ export function writeUInt32(
   const buf = Buffer.alloc(4);
 
   if (littleEndian === "LE") {
-    buf.writeUInt32LE(Number(value), offset);
+    buf.writeUInt32LE(Number(value), 0);
   } else {
-    buf.writeUInt32BE(Number(value), offset);
+    buf.writeUInt32BE(Number(value), 0);
   }
   buffer.set(Uint8Array.from(buf), offset);
 }
@@ -74,9 +74,9 @@ export function writeUInt64(
   const buf = Buffer.alloc(8);
 
   if (littleEndian === "LE") {
-    buf.writeBigUInt64LE(value, offset);
+    buf.writeBigUInt64LE(value, 0);
   } else {
-    buf.writeBigUInt64BE(value, offset);
+    buf.writeBigUInt64BE(value, 0);
   }
   buffer.set(Uint8Array.from(buf), offset);
 }
