@@ -64,3 +64,71 @@ export function compare(v1, v2) {
     }
     return v1.length === v2.length ? 0 : v1.length > v2.length ? 1 : -1;
 }
+export function writeUInt8(buffer, offset, value) {
+    if (offset + 1 > buffer.length) {
+        throw new Error(" Offset is outside the bounds of Uint8Array");
+    }
+    value = value & 0xffn;
+    buffer[offset] = Number(value);
+}
+export function writeUInt16(buffer, offset, value, littleEndian) {
+    if (offset + 2 > buffer.length) {
+        throw new Error(" Offset is outside the bounds of Uint8Array");
+    }
+    littleEndian = littleEndian.toUpperCase();
+    value = value & 0xffffn;
+    if (littleEndian === "LE") {
+        buffer[offset] = Number(value & 0xffn);
+        buffer[offset + 1] = Number((value >> 8n) & 0xffn);
+    }
+    else {
+        buffer[offset] = Number((value >> 8n) & 0xffn);
+        buffer[offset + 1] = Number(value & 0xffn);
+    }
+}
+export function writeUInt32(buffer, offset, value, littleEndian) {
+    if (offset + 4 > buffer.length) {
+        throw new Error(" Offset is outside the bounds of Uint8Array");
+    }
+    littleEndian = littleEndian.toUpperCase();
+    value = value & 0xffffffffn;
+    if (littleEndian === "LE") {
+        buffer[offset] = Number(value & 0xffn);
+        buffer[offset + 1] = Number((value >> 8n) & 0xffn);
+        buffer[offset + 2] = Number((value >> 16n) & 0xffn);
+        buffer[offset + 3] = Number((value >> 24n) & 0xffn);
+    }
+    else {
+        buffer[offset] = Number((value >> 24n) & 0xffn);
+        buffer[offset + 1] = Number((value >> 16n) & 0xffn);
+        buffer[offset + 2] = Number((value >> 8n) & 0xffn);
+        buffer[offset + 3] = Number(value & 0xffn);
+    }
+}
+export function writeUInt64(buffer, offset, value, littleEndian) {
+    if (offset + 8 > buffer.length) {
+        throw new Error(" Offset is outside the bounds of Uint8Array");
+    }
+    littleEndian = littleEndian.toUpperCase();
+    value = value & 0xffffffffffffffffn;
+    if (littleEndian === "LE") {
+        buffer[offset] = Number(value & 0xffn);
+        buffer[offset + 1] = Number((value >> 8n) & 0xffn);
+        buffer[offset + 2] = Number((value >> 16n) & 0xffn);
+        buffer[offset + 3] = Number((value >> 24n) & 0xffn);
+        buffer[offset + 4] = Number((value >> 32n) & 0xffn);
+        buffer[offset + 5] = Number((value >> 40n) & 0xffn);
+        buffer[offset + 6] = Number((value >> 48n) & 0xffn);
+        buffer[offset + 7] = Number((value >> 56n) & 0xffn);
+    }
+    else {
+        buffer[offset] = Number((value >> 56n) & 0xffn);
+        buffer[offset + 1] = Number((value >> 48n) & 0xffn);
+        buffer[offset + 2] = Number((value >> 40n) & 0xffn);
+        buffer[offset + 3] = Number((value >> 32n) & 0xffn);
+        buffer[offset + 4] = Number((value >> 24n) & 0xffn);
+        buffer[offset + 5] = Number((value >> 16n) & 0xffn);
+        buffer[offset + 6] = Number((value >> 8n) & 0xffn);
+        buffer[offset + 7] = Number(value & 0xffn);
+    }
+}
