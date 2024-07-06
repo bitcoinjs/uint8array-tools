@@ -23,6 +23,7 @@
   "types": "src/cjs/index.d.ts",
   "type": "module",
   "scripts": {
+    "benchmarks": "node benchmarks/main.js",
     "build": "npm run clean && npm run build-ts && npm run convert-cjs && rm -f ./src/cjs/browser.d.ts",
     "build-ts": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
     "clean": "rm -rf ./src/* && rm -rf ./coverage && rm -f ./package-lock.json",
@@ -50,6 +51,7 @@
     "@types/node": "16.11.1",
     "@typescript-eslint/eslint-plugin": "5.0.0",
     "@typescript-eslint/parser": "5.0.0",
+    "bench-node": "0.0.1-beta.0",
     "eslint": "8.0.1",
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-prettier": "4.0.0",
