@@ -20,21 +20,21 @@ export type endian = "LE" | "BE" | "le" | "be";
 export function writeUInt8(
   buffer: Uint8Array,
   offset: number,
-  value: bigint
+  value: number
 ): void {
   if (offset + 1 > buffer.length) {
     throw new Error("Offset is outside the bounds of Uint8Array");
   }
 
   const buf = Buffer.alloc(1);
-  buf.writeUInt8(Number(value), 0);
+  buf.writeUInt8(value, 0);
   buffer.set(Uint8Array.from(buf), offset);
 }
 
 export function writeUInt16(
   buffer: Uint8Array,
   offset: number,
-  value: bigint,
+  value: number,
   littleEndian: endian
 ): void {
   if (offset + 2 > buffer.length) {
@@ -46,9 +46,9 @@ export function writeUInt16(
   const buf = Buffer.alloc(2);
 
   if (littleEndian === "LE") {
-    buf.writeUInt16LE(Number(value), 0);
+    buf.writeUInt16LE(value, 0);
   } else {
-    buf.writeUInt16BE(Number(value), 0);
+    buf.writeUInt16BE(value, 0);
   }
   buffer.set(Uint8Array.from(buf), offset);
 }
@@ -56,7 +56,7 @@ export function writeUInt16(
 export function writeUInt32(
   buffer: Uint8Array,
   offset: number,
-  value: bigint,
+  value: number,
   littleEndian: endian
 ): void {
   if (offset + 4 > buffer.length) {
@@ -68,9 +68,9 @@ export function writeUInt32(
   const buf = Buffer.alloc(4);
 
   if (littleEndian === "LE") {
-    buf.writeUInt32LE(Number(value), 0);
+    buf.writeUInt32LE(value, 0);
   } else {
-    buf.writeUInt32BE(Number(value), 0);
+    buf.writeUInt32BE(value, 0);
   }
   buffer.set(Uint8Array.from(buf), offset);
 }

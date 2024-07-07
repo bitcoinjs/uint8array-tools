@@ -75,7 +75,7 @@ export type endian = "LE" | "BE" | "le" | "be";
 export function writeUInt8(
   buffer: Uint8Array,
   offset: number,
-  value: bigint
+  value: number
 ): void {
   if (offset + 1 > buffer.length) {
     throw new Error("Offset is outside the bounds of Uint8Array");
@@ -87,13 +87,13 @@ export function writeUInt8(
     );
   }
 
-  buffer[offset] = Number(value);
+  buffer[offset] = value;
 }
 
 export function writeUInt16(
   buffer: Uint8Array,
   offset: number,
-  value: bigint,
+  value: number,
   littleEndian: endian
 ): void {
   if (offset + 2 > buffer.length) {
@@ -107,18 +107,18 @@ export function writeUInt16(
   }
 
   if (littleEndian === "LE") {
-    buffer[offset] = Number(value & 0xffn);
-    buffer[offset + 1] = Number((value >> 8n) & 0xffn);
+    buffer[offset] = value & 0xff;
+    buffer[offset + 1] = (value >> 8) & 0xff;
   } else {
-    buffer[offset] = Number((value >> 8n) & 0xffn);
-    buffer[offset + 1] = Number(value & 0xffn);
+    buffer[offset] = (value >> 8) & 0xff;
+    buffer[offset + 1] = value & 0xff;
   }
 }
 
 export function writeUInt32(
   buffer: Uint8Array,
   offset: number,
-  value: bigint,
+  value: number,
   littleEndian: endian
 ): void {
   if (offset + 4 > buffer.length) {
@@ -134,15 +134,15 @@ export function writeUInt32(
   }
 
   if (littleEndian === "LE") {
-    buffer[offset] = Number(value & 0xffn);
-    buffer[offset + 1] = Number((value >> 8n) & 0xffn);
-    buffer[offset + 2] = Number((value >> 16n) & 0xffn);
-    buffer[offset + 3] = Number((value >> 24n) & 0xffn);
+    buffer[offset] = value & 0xff;
+    buffer[offset + 1] = (value >> 8) & 0xff;
+    buffer[offset + 2] = (value >> 16) & 0xff;
+    buffer[offset + 3] = (value >> 24) & 0xff;
   } else {
-    buffer[offset] = Number((value >> 24n) & 0xffn);
-    buffer[offset + 1] = Number((value >> 16n) & 0xffn);
-    buffer[offset + 2] = Number((value >> 8n) & 0xffn);
-    buffer[offset + 3] = Number(value & 0xffn);
+    buffer[offset] = (value >> 24) & 0xff;
+    buffer[offset + 1] = (value >> 16) & 0xff;
+    buffer[offset + 2] = (value >> 8) & 0xff;
+    buffer[offset + 3] = value & 0xff;
   }
 }
 
