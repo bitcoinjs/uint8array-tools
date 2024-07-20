@@ -1,6 +1,10 @@
 export declare function toUtf8(bytes: Uint8Array): string;
+export declare function fromUtf8(s: string): Uint8Array;
+export declare function concat(arrays: Uint8Array[]): Uint8Array;
 export declare function toHex(bytes: Uint8Array): string;
 export declare function fromHex(hexString: string): Uint8Array;
+export declare function toBase64(bytes: Uint8Array): string;
+export declare function fromBase64(base64: string): Uint8Array;
 export declare type CompareResult = -1 | 0 | 1;
 export declare function compare(v1: Uint8Array, v2: Uint8Array): CompareResult;
 export declare type endian = "LE" | "BE" | "le" | "be";

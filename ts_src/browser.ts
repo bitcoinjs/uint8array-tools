@@ -15,6 +15,21 @@ export function toUtf8(bytes: Uint8Array): string {
   return DECODER.decode(bytes);
 }
 
+export function fromUtf8(s: string): Uint8Array {
+  return ENCODER.encode(s);
+}
+
+export function concat(arrays: Uint8Array[]): Uint8Array {
+  const totalLength = arrays.reduce((a, b) => a + b.length, 0);
+  const result = new Uint8Array(totalLength);
+  let offset = 0;
+  for (const array of arrays) {
+    result.set(array, offset);
+    offset += array.length;
+  }
+  return result;
+}
+
 // There are two implementations.
 // One optimizes for length of the bytes, and uses TextDecoder.
 // One optimizes for iteration count, and appends strings.
@@ -56,6 +71,19 @@ export function fromHex(hexString: string): Uint8Array {
     resultBytes[i] = (a << 4) | b;
   }
   return i === resultBytes.length ? resultBytes : resultBytes.slice(0, i);
+}
+
+export function toBase64(bytes: Uint8Array): string {
+  return btoa(String.fromCharCode(...bytes));
+}
+
+export function fromBase64(base64: string): Uint8Array {
+  const binaryString = atob(base64);
+  const bytes = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes;
 }
 
 export type CompareResult = -1 | 0 | 1;

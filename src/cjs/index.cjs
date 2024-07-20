@@ -1,10 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.readUInt64 = exports.readUInt32 = exports.readUInt16 = exports.readUInt8 = exports.writeUInt64 = exports.writeUInt32 = exports.writeUInt16 = exports.writeUInt8 = exports.compare = exports.fromHex = exports.toHex = exports.toUtf8 = void 0;
+exports.readUInt64 = exports.readUInt32 = exports.readUInt16 = exports.readUInt8 = exports.writeUInt64 = exports.writeUInt32 = exports.writeUInt16 = exports.writeUInt8 = exports.compare = exports.fromBase64 = exports.toBase64 = exports.fromHex = exports.toHex = exports.concat = exports.fromUtf8 = exports.toUtf8 = void 0;
 function toUtf8(bytes) {
     return Buffer.from(bytes || []).toString();
 }
 exports.toUtf8 = toUtf8;
+function fromUtf8(s) {
+    return Uint8Array.from(Buffer.from(s || "", "utf8"));
+}
+exports.fromUtf8 = fromUtf8;
+function concat(arrays) {
+    return Uint8Array.from(Buffer.concat(arrays));
+}
+exports.concat = concat;
 function toHex(bytes) {
     return Buffer.from(bytes || []).toString("hex");
 }
@@ -13,6 +21,14 @@ function fromHex(hexString) {
     return Uint8Array.from(Buffer.from(hexString || "", "hex"));
 }
 exports.fromHex = fromHex;
+function toBase64(bytes) {
+    return Buffer.from(bytes).toString("base64");
+}
+exports.toBase64 = toBase64;
+function fromBase64(base64) {
+    return Uint8Array.from(Buffer.from(base64 || "", "base64"));
+}
+exports.fromBase64 = fromBase64;
 function compare(v1, v2) {
     return Buffer.from(v1).compare(Buffer.from(v2));
 }
