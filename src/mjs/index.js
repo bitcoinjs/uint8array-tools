@@ -68,7 +68,7 @@ export function readUInt8(buffer, offset) {
         throw new Error("Offset is outside the bounds of Uint8Array");
     }
     const buf = Buffer.from(buffer);
-    return BigInt(buf.readUInt8(offset));
+    return buf.readUInt8(offset);
 }
 export function readUInt16(buffer, offset, littleEndian) {
     if (offset + 2 > buffer.length) {
@@ -77,10 +77,10 @@ export function readUInt16(buffer, offset, littleEndian) {
     littleEndian = littleEndian.toUpperCase();
     const buf = Buffer.from(buffer);
     if (littleEndian === "LE") {
-        return BigInt(buf.readUInt16LE(offset));
+        return buf.readUInt16LE(offset);
     }
     else {
-        return BigInt(buf.readUInt16BE(offset));
+        return buf.readUInt16BE(offset);
     }
 }
 export function readUInt32(buffer, offset, littleEndian) {
@@ -90,10 +90,10 @@ export function readUInt32(buffer, offset, littleEndian) {
     littleEndian = littleEndian.toUpperCase();
     const buf = Buffer.from(buffer);
     if (littleEndian === "LE") {
-        return BigInt(buf.readUInt32LE(offset));
+        return buf.readUInt32LE(offset);
     }
     else {
-        return BigInt(buf.readUInt32BE(offset));
+        return buf.readUInt32BE(offset);
     }
 }
 export function readUInt64(buffer, offset, littleEndian) {

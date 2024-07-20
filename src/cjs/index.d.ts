@@ -8,7 +8,7 @@ export declare function writeUInt8(buffer: Uint8Array, offset: number, value: nu
 export declare function writeUInt16(buffer: Uint8Array, offset: number, value: number, littleEndian: endian): void;
 export declare function writeUInt32(buffer: Uint8Array, offset: number, value: number, littleEndian: endian): void;
 export declare function writeUInt64(buffer: Uint8Array, offset: number, value: bigint, littleEndian: endian): void;
-export declare function readUInt8(buffer: Uint8Array, offset: number): bigint;
-export declare function readUInt16(buffer: Uint8Array, offset: number, littleEndian: endian): bigint;
-export declare function readUInt32(buffer: Uint8Array, offset: number, littleEndian: endian): bigint;
+export declare function readUInt8(buffer: Uint8Array, offset: number): number;
+export declare function readUInt16(buffer: Uint8Array, offset: number, littleEndian: endian): number;
+export declare function readUInt32(buffer: Uint8Array, offset: number, littleEndian: endian): number;
 export declare function readUInt64(buffer: Uint8Array, offset: number, littleEndian: endian): bigint;
