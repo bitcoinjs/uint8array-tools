@@ -227,98 +227,119 @@ describe(`Uint8Array tools`, () => {
 
         expect(expectedArray.toString("hex")).toEqual(tools.toHex(actualArray));
       });
-    });
+      it("should throw an error on overflow", () => {
+        let bytes = new Uint8Array(1);
 
-    it("should throw an error on overflow", () => {
-      let bytes = new Uint8Array(1);
+        let overflowVal = 0xffn + 1n;
+        expect(() => tools.writeUInt8(bytes, 0, 0xff + 1)).toThrowError(
+          `The value of "value" is out of range. It must be >= 0 and <= ${0xffn}. Received ${overflowVal}`
+        );
 
-      let overflowVal = 0xffn + 1n;
-      expect(() => tools.writeUInt8(bytes, 0, 0xff + 1)).toThrowError(
-        `The value of "value" is out of range. It must be >= 0 and <= ${0xffn}. Received ${overflowVal}`
-      );
+        bytes = new Uint8Array(2);
+        overflowVal = 0xffffn + 1n;
 
-      bytes = new Uint8Array(2);
-      overflowVal = 0xffffn + 1n;
+        expect(() =>
+          tools.writeUInt16(bytes, 0, 0xffff + 1, "LE")
+        ).toThrowError(
+          `The value of "value" is out of range. It must be >= 0 and <= ${0xffffn}. Received ${overflowVal}`
+        );
 
-      expect(() => tools.writeUInt16(bytes, 0, 0xffff + 1, "LE")).toThrowError(
-        `The value of "value" is out of range. It must be >= 0 and <= ${0xffffn}. Received ${overflowVal}`
-      );
+        bytes = new Uint8Array(4);
+        overflowVal = 0xffffffffn + 1n;
 
-      bytes = new Uint8Array(4);
-      overflowVal = 0xffffffffn + 1n;
+        expect(() =>
+          tools.writeUInt32(bytes, 0, 0xffffffff + 1, "LE")
+        ).toThrowError(
+          `The value of "value" is out of range. It must be >= 0 and <= ${0xffffffffn}. Received ${overflowVal}`
+        );
 
-      expect(() =>
-        tools.writeUInt32(bytes, 0, 0xffffffff + 1, "LE")
-      ).toThrowError(
-        `The value of "value" is out of range. It must be >= 0 and <= ${0xffffffffn}. Received ${overflowVal}`
-      );
+        bytes = new Uint8Array(8);
+        overflowVal = 0xffffffffffffffffn + 1n;
 
-      bytes = new Uint8Array(8);
-      overflowVal = 0xffffffffffffffffn + 1n;
+        expect(() =>
+          tools.writeUInt64(bytes, 0, 0xffffffffffffffffn + 1n, "LE")
+        ).toThrowError(
+          `The value of "value" is out of range. It must be >= 0 and <= ${0xffffffffffffffffn.toString()}. Received ${overflowVal}`
+        );
+      });
 
-      expect(() =>
-        tools.writeUInt64(bytes, 0, 0xffffffffffffffffn + 1n, "LE")
-      ).toThrowError(
-        `The value of "value" is out of range. It must be >= 0 and <= ${0xffffffffffffffffn.toString()}. Received ${overflowVal}`
-      );
-    });
+      it("should read bytes at the correct offset", () => {
+        const actualArray = new Uint8Array(200);
+        const expectedArray = Buffer.alloc(200);
 
-    it("should read bytes at the correct offset", () => {
-      const actualArray = new Uint8Array(200);
-      const expectedArray = Buffer.alloc(200);
+        let hex = "ff";
+        tools.writeUInt8(actualArray, 0, Number.parseInt(hex, 16));
+        expectedArray.writeUInt8(Number.parseInt(hex, 16), 0);
 
-      let hex = "ff";
-      tools.writeUInt8(actualArray, 0, Number.parseInt(hex, 16));
-      expectedArray.writeUInt8(Number.parseInt(hex, 16), 0);
+        expect(expectedArray.readUInt8(0)).toEqual(
+          tools.readUInt8(actualArray, 0)
+        );
 
-      expect(expectedArray.readUInt8(0)).toEqual(
-        Number(tools.readUInt8(actualArray, 0))
-      );
+        hex = "abcd";
+        tools.writeUInt16(actualArray, 10, Number.parseInt(hex, 16), "LE");
+        expectedArray.writeUInt16LE(Number.parseInt(hex, 16), 10);
 
-      hex = "abcd";
-      tools.writeUInt16(actualArray, 10, Number.parseInt(hex, 16), "LE");
-      expectedArray.writeUInt16LE(Number.parseInt(hex, 16), 10);
+        expect(expectedArray.readUInt16LE(10)).toEqual(
+          tools.readUInt16(actualArray, 10, "LE")
+        );
 
-      expect(expectedArray.readUInt16LE(10)).toEqual(
-        Number(tools.readUInt16(actualArray, 10, "LE"))
-      );
+        tools.writeUInt16(actualArray, 20, Number.parseInt(hex, 16), "BE");
+        expectedArray.writeUInt16BE(Number.parseInt(hex, 16), 20);
 
-      tools.writeUInt16(actualArray, 20, Number.parseInt(hex, 16), "BE");
-      expectedArray.writeUInt16BE(Number.parseInt(hex, 16), 20);
+        expect(expectedArray.readUInt16BE(20)).toEqual(
+          tools.readUInt16(actualArray, 20, "BE")
+        );
 
-      expect(expectedArray.readUInt16BE(20)).toEqual(
-        Number(tools.readUInt16(actualArray, 20, "BE"))
-      );
+        hex = "ffffabff";
+        tools.writeUInt32(actualArray, 30, Number.parseInt(hex, 16), "LE");
+        expectedArray.writeUInt32LE(Number.parseInt(hex, 16), 30);
 
-      hex = "ffffabff";
-      tools.writeUInt32(actualArray, 30, Number.parseInt(hex, 16), "LE");
-      expectedArray.writeUInt32LE(Number.parseInt(hex, 16), 30);
+        expect(expectedArray.readUInt32LE(30)).toEqual(
+          tools.readUInt32(actualArray, 30, "LE")
+        );
 
-      expect(expectedArray.readUInt32LE(30)).toEqual(
-        Number(tools.readUInt32(actualArray, 30, "LE"))
-      );
+        tools.writeUInt32(actualArray, 50, Number.parseInt(hex, 16), "BE");
+        expectedArray.writeUInt32BE(Number.parseInt(hex, 16), 50);
 
-      tools.writeUInt32(actualArray, 50, Number.parseInt(hex, 16), "BE");
-      expectedArray.writeUInt32BE(Number.parseInt(hex, 16), 50);
+        expect(expectedArray.readUInt32BE(50)).toEqual(
+          tools.readUInt32(actualArray, 50, "BE")
+        );
 
-      expect(expectedArray.readUInt32BE(50)).toEqual(
-        Number(tools.readUInt32(actualArray, 50, "BE"))
-      );
+        hex = "ffffffffffffabff";
+        tools.writeUInt64(actualArray, 70, BigInt("0x" + hex), "LE");
+        expectedArray.writeBigUInt64LE(BigInt("0x" + hex), 70);
 
-      hex = "ffffffffffffabff";
-      tools.writeUInt64(actualArray, 70, BigInt("0x" + hex), "LE");
-      expectedArray.writeBigUInt64LE(BigInt("0x" + hex), 70);
+        expect(expectedArray.readBigUInt64LE(70)).toEqual(
+          tools.readUInt64(actualArray, 70, "LE")
+        );
 
-      expect(expectedArray.readBigUInt64LE(70)).toEqual(
-        tools.readUInt64(actualArray, 70, "LE")
-      );
+        tools.writeUInt64(actualArray, 110, BigInt("0x" + hex), "BE");
+        expectedArray.writeBigUInt64BE(BigInt("0x" + hex), 110);
 
-      tools.writeUInt64(actualArray, 110, BigInt("0x" + hex), "BE");
-      expectedArray.writeBigUInt64BE(BigInt("0x" + hex), 110);
+        expect(expectedArray.readBigUInt64BE(110)).toEqual(
+          tools.readUInt64(actualArray, 110, "BE")
+        );
+      });
 
-      expect(expectedArray.readBigUInt64BE(110)).toEqual(
-        tools.readUInt64(actualArray, 110, "BE")
-      );
+      it("should throw an error if the offset is out of bounds", () => {
+        const arr = new Uint8Array(10);
+
+        expect(() => tools.readUInt8(arr, 10)).toThrowError(
+          new Error("Offset is outside the bounds of Uint8Array")
+        );
+
+        const fns = [tools.readUInt16, tools.readUInt32, tools.readUInt64];
+
+        for (const fn of fns) {
+          expect(() => fn(arr, 10, "LE")).toThrowError(
+            new Error("Offset is outside the bounds of Uint8Array")
+          );
+
+          expect(() => fn(arr, 10, "BE")).toThrowError(
+            new Error("Offset is outside the bounds of Uint8Array")
+          );
+        }
+      });
     });
   }
 });
