@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.compare = exports.fromHex = exports.toHex = exports.toUtf8 = void 0;
+exports.readUInt64 = exports.readUInt32 = exports.readUInt16 = exports.readUInt8 = exports.writeUInt64 = exports.writeUInt32 = exports.writeUInt16 = exports.writeUInt8 = exports.compare = exports.fromHex = exports.toHex = exports.toUtf8 = void 0;
 const HEX_STRINGS = "0123456789abcdefABCDEF";
 const HEX_CODES = HEX_STRINGS.split("").map((c) => c.codePointAt(0));
 const HEX_CODEPOINTS = Array(256)
@@ -71,3 +71,163 @@ function compare(v1, v2) {
     return v1.length === v2.length ? 0 : v1.length > v2.length ? 1 : -1;
 }
 exports.compare = compare;
+function writeUInt8(buffer, offset, value) {
+    if (offset + 1 > buffer.length) {
+        throw new Error("Offset is outside the bounds of Uint8Array");
+    }
+    if (value > 0xff) {
+        throw new Error(`The value of "value" is out of range. It must be >= 0 and <= ${0xff}. Received ${value}`);
+    }
+    buffer[offset] = value;
+}
+exports.writeUInt8 = writeUInt8;
+function writeUInt16(buffer, offset, value, littleEndian) {
+    if (offset + 2 > buffer.length) {
+        throw new Error("Offset is outside the bounds of Uint8Array");
+    }
+    littleEndian = littleEndian.toUpperCase();
+    if (value > 0xffff) {
+        throw new Error(`The value of "value" is out of range. It must be >= 0 and <= ${0xffff}. Received ${value}`);
+    }
+    if (littleEndian === "LE") {
+        buffer[offset] = value & 0xff;
+        buffer[offset + 1] = (value >> 8) & 0xff;
+    }
+    else {
+        buffer[offset] = (value >> 8) & 0xff;
+        buffer[offset + 1] = value & 0xff;
+    }
+}
+exports.writeUInt16 = writeUInt16;
+function writeUInt32(buffer, offset, value, littleEndian) {
+    if (offset + 4 > buffer.length) {
+        throw new Error("Offset is outside the bounds of Uint8Array");
+    }
+    littleEndian = littleEndian.toUpperCase();
+    if (value > 0xffffffff) {
+        throw new Error(`The value of "value" is out of range. It must be >= 0 and <= ${0xffffffff}. Received ${value}`);
+    }
+    if (littleEndian === "LE") {
+        buffer[offset] = value & 0xff;
+        buffer[offset + 1] = (value >> 8) & 0xff;
+        buffer[offset + 2] = (value >> 16) & 0xff;
+        buffer[offset + 3] = (value >> 24) & 0xff;
+    }
+    else {
+        buffer[offset] = (value >> 24) & 0xff;
+        buffer[offset + 1] = (value >> 16) & 0xff;
+        buffer[offset + 2] = (value >> 8) & 0xff;
+        buffer[offset + 3] = value & 0xff;
+    }
+}
+exports.writeUInt32 = writeUInt32;
+function writeUInt64(buffer, offset, value, littleEndian) {
+    if (offset + 8 > buffer.length) {
+        throw new Error("Offset is outside the bounds of Uint8Array");
+    }
+    littleEndian = littleEndian.toUpperCase();
+    if (value > 0xffffffffffffffffn) {
+        throw new Error(`The value of "value" is out of range. It must be >= 0 and <= ${0xffffffffffffffffn}. Received ${value}`);
+    }
+    if (littleEndian === "LE") {
+        buffer[offset] = Number(value & 0xffn);
+        buffer[offset + 1] = Number((value >> 8n) & 0xffn);
+        buffer[offset + 2] = Number((value >> 16n) & 0xffn);
+        buffer[offset + 3] = Number((value >> 24n) & 0xffn);
+        buffer[offset + 4] = Number((value >> 32n) & 0xffn);
+        buffer[offset + 5] = Number((value >> 40n) & 0xffn);
+        buffer[offset + 6] = Number((value >> 48n) & 0xffn);
+        buffer[offset + 7] = Number((value >> 56n) & 0xffn);
+    }
+    else {
+        buffer[offset] = Number((value >> 56n) & 0xffn);
+        buffer[offset + 1] = Number((value >> 48n) & 0xffn);
+        buffer[offset + 2] = Number((value >> 40n) & 0xffn);
+        buffer[offset + 3] = Number((value >> 32n) & 0xffn);
+        buffer[offset + 4] = Number((value >> 24n) & 0xffn);
+        buffer[offset + 5] = Number((value >> 16n) & 0xffn);
+        buffer[offset + 6] = Number((value >> 8n) & 0xffn);
+        buffer[offset + 7] = Number(value & 0xffn);
+    }
+}
+exports.writeUInt64 = writeUInt64;
+function readUInt8(buffer, offset) {
+    if (offset + 1 > buffer.length) {
+        throw new Error("Offset is outside the bounds of Uint8Array");
+    }
+    return buffer[offset];
+}
+exports.readUInt8 = readUInt8;
+function readUInt16(buffer, offset, littleEndian) {
+    if (offset + 2 > buffer.length) {
+        throw new Error("Offset is outside the bounds of Uint8Array");
+    }
+    littleEndian = littleEndian.toUpperCase();
+    if (littleEndian === "LE") {
+        let num = 0;
+        num = (num << 8) + buffer[offset + 1];
+        num = (num << 8) + buffer[offset];
+        return num;
+    }
+    else {
+        let num = 0;
+        num = (num << 8) + buffer[offset];
+        num = (num << 8) + buffer[offset + 1];
+        return num;
+    }
+}
+exports.readUInt16 = readUInt16;
+function readUInt32(buffer, offset, littleEndian) {
+    if (offset + 4 > buffer.length) {
+        throw new Error("Offset is outside the bounds of Uint8Array");
+    }
+    littleEndian = littleEndian.toUpperCase();
+    if (littleEndian === "LE") {
+        let num = 0;
+        num = ((num << 8) + buffer[offset + 3]) >>> 0;
+        num = ((num << 8) + buffer[offset + 2]) >>> 0;
+        num = ((num << 8) + buffer[offset + 1]) >>> 0;
+        num = ((num << 8) + buffer[offset]) >>> 0;
+        return num;
+    }
+    else {
+        let num = 0;
+        num = ((num << 8) + buffer[offset]) >>> 0;
+        num = ((num << 8) + buffer[offset + 1]) >>> 0;
+        num = ((num << 8) + buffer[offset + 2]) >>> 0;
+        num = ((num << 8) + buffer[offset + 3]) >>> 0;
+        return num;
+    }
+}
+exports.readUInt32 = readUInt32;
+function readUInt64(buffer, offset, littleEndian) {
+    if (offset + 8 > buffer.length) {
+        throw new Error("Offset is outside the bounds of Uint8Array");
+    }
+    littleEndian = littleEndian.toUpperCase();
+    if (littleEndian === "LE") {
+        let num = 0n;
+        num = (num << 8n) + BigInt(buffer[offset + 7]);
+        num = (num << 8n) + BigInt(buffer[offset + 6]);
+        num = (num << 8n) + BigInt(buffer[offset + 5]);
+        num = (num << 8n) + BigInt(buffer[offset + 4]);
+        num = (num << 8n) + BigInt(buffer[offset + 3]);
+        num = (num << 8n) + BigInt(buffer[offset + 2]);
+        num = (num << 8n) + BigInt(buffer[offset + 1]);
+        num = (num << 8n) + BigInt(buffer[offset]);
+        return num;
+    }
+    else {
+        let num = 0n;
+        num = (num << 8n) + BigInt(buffer[offset]);
+        num = (num << 8n) + BigInt(buffer[offset + 1]);
+        num = (num << 8n) + BigInt(buffer[offset + 2]);
+        num = (num << 8n) + BigInt(buffer[offset + 3]);
+        num = (num << 8n) + BigInt(buffer[offset + 4]);
+        num = (num << 8n) + BigInt(buffer[offset + 5]);
+        num = (num << 8n) + BigInt(buffer[offset + 6]);
+        num = (num << 8n) + BigInt(buffer[offset + 7]);
+        return num;
+    }
+}
+exports.readUInt64 = readUInt64;
