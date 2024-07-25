@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.readUInt64 = exports.readUInt32 = exports.readUInt16 = exports.readUInt8 = exports.writeUInt64 = exports.writeUInt32 = exports.writeUInt16 = exports.writeUInt8 = exports.compare = exports.fromHex = exports.toHex = exports.toUtf8 = void 0;
+exports.readUInt64 = exports.readUInt32 = exports.readUInt16 = exports.readUInt8 = exports.writeUInt64 = exports.writeUInt32 = exports.writeUInt16 = exports.writeUInt8 = exports.compare = exports.fromBase64 = exports.toBase64 = exports.fromHex = exports.toHex = exports.concat = exports.fromUtf8 = exports.toUtf8 = void 0;
 const HEX_STRINGS = "0123456789abcdefABCDEF";
 const HEX_CODES = HEX_STRINGS.split("").map((c) => c.codePointAt(0));
 const HEX_CODEPOINTS = Array(256)
@@ -17,6 +17,21 @@ function toUtf8(bytes) {
     return DECODER.decode(bytes);
 }
 exports.toUtf8 = toUtf8;
+function fromUtf8(s) {
+    return ENCODER.encode(s);
+}
+exports.fromUtf8 = fromUtf8;
+function concat(arrays) {
+    const totalLength = arrays.reduce((a, b) => a + b.length, 0);
+    const result = new Uint8Array(totalLength);
+    let offset = 0;
+    for (const array of arrays) {
+        result.set(array, offset);
+        offset += array.length;
+    }
+    return result;
+}
+exports.concat = concat;
 // There are two implementations.
 // One optimizes for length of the bytes, and uses TextDecoder.
 // One optimizes for iteration count, and appends strings.
@@ -60,6 +75,19 @@ function fromHex(hexString) {
     return i === resultBytes.length ? resultBytes : resultBytes.slice(0, i);
 }
 exports.fromHex = fromHex;
+function toBase64(bytes) {
+    return btoa(String.fromCharCode(...bytes));
+}
+exports.toBase64 = toBase64;
+function fromBase64(base64) {
+    const binaryString = atob(base64);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes;
+}
+exports.fromBase64 = fromBase64;
 // Same behavior as Buffer.compare()
 function compare(v1, v2) {
     const minLength = Math.min(v1.length, v2.length);

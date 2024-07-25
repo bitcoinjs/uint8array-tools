@@ -1,11 +1,23 @@
 export function toUtf8(bytes) {
     return Buffer.from(bytes || []).toString();
 }
+export function fromUtf8(s) {
+    return Uint8Array.from(Buffer.from(s || "", "utf8"));
+}
+export function concat(arrays) {
+    return Uint8Array.from(Buffer.concat(arrays));
+}
 export function toHex(bytes) {
     return Buffer.from(bytes || []).toString("hex");
 }
 export function fromHex(hexString) {
     return Uint8Array.from(Buffer.from(hexString || "", "hex"));
+}
+export function toBase64(bytes) {
+    return Buffer.from(bytes).toString("base64");
+}
+export function fromBase64(base64) {
+    return Uint8Array.from(Buffer.from(base64 || "", "base64"));
 }
 export function compare(v1, v2) {
     return Buffer.from(v1).compare(Buffer.from(v2));

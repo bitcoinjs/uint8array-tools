@@ -2,12 +2,28 @@ export function toUtf8(bytes: Uint8Array): string {
   return Buffer.from(bytes || []).toString();
 }
 
+export function fromUtf8(s: string): Uint8Array {
+  return Uint8Array.from(Buffer.from(s || "", "utf8"));
+}
+
+export function concat(arrays: Uint8Array[]): Uint8Array {
+  return Uint8Array.from(Buffer.concat(arrays));
+}
+
 export function toHex(bytes: Uint8Array): string {
   return Buffer.from(bytes || []).toString("hex");
 }
 
 export function fromHex(hexString: string): Uint8Array {
   return Uint8Array.from(Buffer.from(hexString || "", "hex"));
+}
+
+export function toBase64(bytes: Uint8Array): string {
+  return Buffer.from(bytes).toString("base64");
+}
+
+export function fromBase64(base64: string): Uint8Array {
+  return Uint8Array.from(Buffer.from(base64 || "", "base64"));
 }
 
 export type CompareResult = -1 | 0 | 1;

@@ -53,6 +53,12 @@ describe(`Uint8Array tools`, () => {
         expect(tools.toUtf8(longBytes2)).toEqual(longUtf8);
         expect((tools.toUtf8 as any)()).toEqual("");
       });
+      it("should read utf8 with fromUtf8", () => {
+        expect(tools.fromUtf8(utf8)).toEqual(bytes3);
+        expect(tools.fromUtf8(str)).toEqual(testBytes);
+        expect(tools.fromUtf8(longUtf8)).toEqual(longBytes2);
+        expect((tools.fromUtf8 as any)()).toEqual(f([]));
+      });
       it(`should compare Uint8Arrays`, () => {
         expect(tools.compare(bytes, bytes2)).toBe(-1);
         expect(tools.compare(bytes, bytes)).toBe(0);
@@ -62,6 +68,71 @@ describe(`Uint8Array tools`, () => {
         expect(tools.compare(bytes2, bytes2LargerLeft)).toBe(1);
         expect(tools.compare(bytes2LargerLeft, bytes2)).toBe(-1);
       });
+      it("should concat Uint8Arrays", () => {
+        const fixtures = [
+          [new Uint8Array([]), new Uint8Array([])],
+          [new Uint8Array([1]), new Uint8Array([1])],
+          [new Uint8Array([])],
+          [new Uint8Array()],
+          [...new Array(1000)].map(() => new Uint8Array([123])),
+        ];
+
+        for (const fixture of fixtures) {
+          expect(new Uint8Array(Buffer.concat(fixture))).toEqual(
+            tools.concat(fixture)
+          );
+        }
+      });
+      it("should read from base64", () => {
+        const fixtures = [
+          Buffer.from("").toString("base64"),
+          Buffer.from("a").toString("base64"),
+          Buffer.from("ab").toString("base64"),
+          Buffer.from("abc").toString("base64"),
+          Buffer.from("abcd").toString("base64"),
+          Buffer.from("abcde").toString("base64"),
+          Buffer.from("abcdef").toString("base64"),
+          Buffer.from("abcdefg").toString("base64"),
+          Buffer.from("abcdefgh").toString("base64"),
+          Buffer.from("abcdefghi").toString("base64"),
+          Buffer.from("abcdefghij").toString("base64"),
+          Buffer.from("abcdefghijk").toString("base64"),
+          Buffer.from("abcdefghijkl").toString("base64"),
+          Buffer.from("abcdefghijklm").toString("base64"),
+          Buffer.from("abcdefghijklmn").toString("base64"),
+        ];
+
+        for (const fixture of fixtures) {
+          expect(tools.fromBase64(fixture)).toEqual(
+            Uint8Array.from(Buffer.from(fixture, "base64"))
+          );
+        }
+      });
+
+      it("should write to base64", () => {
+        const fixtures = [
+          Buffer.from("").toString("base64"),
+          Buffer.from("a").toString("base64"),
+          Buffer.from("ab").toString("base64"),
+          Buffer.from("abc").toString("base64"),
+          Buffer.from("abcd").toString("base64"),
+          Buffer.from("abcde").toString("base64"),
+          Buffer.from("abcdef").toString("base64"),
+          Buffer.from("abcdefg").toString("base64"),
+          Buffer.from("abcdefgh").toString("base64"),
+          Buffer.from("abcdefghi").toString("base64"),
+          Buffer.from("abcdefghij").toString("base64"),
+          Buffer.from("abcdefghijk").toString("base64"),
+          Buffer.from("abcdefghijkl").toString("base64"),
+          Buffer.from("abcdefghijklm").toString("base64"),
+          Buffer.from("abcdefghijklmn").toString("base64"),
+        ];
+
+        for (const fixture of fixtures) {
+          expect(tools.toBase64(tools.fromBase64(fixture))).toEqual(fixture);
+        }
+      });
+
       it("should writeUint8", () => {
         const hexs = ["03", "fd"];
 

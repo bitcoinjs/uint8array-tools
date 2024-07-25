@@ -15,10 +15,12 @@
     "node": {
       "module": "./src/mjs/index.js",
       "require": "./src/cjs/index.cjs",
-      "import": "./src/mjs/index.js"
+      "import": "./src/mjs/index.js",
+      "types": "./src/cjs/index.d.ts"
     },
     "browser": "./src/mjs/browser.js",
-    "default": "./src/mjs/browser.js"
+    "default": "./src/mjs/browser.js",
+    "types": "./src/cjs/index.d.ts"
   },
   "types": "src/cjs/index.d.ts",
   "type": "module",
