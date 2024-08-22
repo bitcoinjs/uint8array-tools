@@ -416,21 +416,21 @@ describe(`Uint8Array tools`, () => {
         const arr = new Uint8Array(1);
         const fixtures = [
           {
-            value: 1, 
+            value: 1,
             expect: Uint8Array.from([1]),
           },
           {
-            value: 0x7f, 
+            value: 0x7f,
             expect: Uint8Array.from([0x7f]),
-          }, 
+          },
           {
             value: -0x80,
-            expect: Uint8Array.from([0x80]), 
-          }, 
+            expect: Uint8Array.from([0x80]),
+          },
           {
-            value: -0x01, 
+            value: -0x01,
             expect: Uint8Array.from([0xff]),
-          }
+          },
         ];
 
         for (const fixture of fixtures) {
@@ -443,80 +443,58 @@ describe(`Uint8Array tools`, () => {
         const arr = new Uint8Array(1);
         const fixtures = [
           {
-            value: 1, 
+            value: 1,
             expect: 1,
           },
           {
-            value: 0x7f, 
+            value: 0x7f,
             expect: 0x7f,
-          }, 
+          },
           {
             value: -0x80,
-            expect: -0x80, 
-          }, 
+            expect: -0x80,
+          },
           {
-            value: -0x01, 
+            value: -0x01,
             expect: -0x01,
-          }
+          },
         ];
 
         for (const fixture of fixtures) {
           tools.writeInt8(arr, fixture.value, 0);
           expect(tools.readInt8(arr, 0)).toEqual(fixture.expect);
         }
-      })
+      });
 
-      it("should be able to writeInt16 in little endian", () => {
+      it("should be able to writeInt16", () => {
         const arr = new Uint8Array(2);
         const fixtures = [
           {
-            value: 1, 
+            value: 1,
             expect: Uint8Array.from([1, 0]),
           },
           {
-            value: 0x7fff, 
+            value: 0x7fff,
             expect: Uint8Array.from([0xff, 0x7f]),
-          }, 
+          },
           {
             value: -0x8000,
-            expect: Uint8Array.from([0x00, 0x80]), 
-          }, 
+            expect: Uint8Array.from([0x00, 0x80]),
+          },
           {
-            value: -0x01, 
+            value: -0x01,
             expect: Uint8Array.from([0xff, 0xff]),
-          }
+          },
         ];
 
         for (const fixture of fixtures) {
           expect(tools.writeInt16(arr, fixture.value, 0, "LE")).toEqual(2);
           expect(arr).toEqual(fixture.expect);
         }
-      });
 
-      it("should be able to writeInt16 in big endian", () => {
-        const arr = new Uint8Array(2);
-        const fixtures = [
-          {
-            value: 1, 
-            expect: Uint8Array.from([0, 1]),
-          },
-          {
-            value: 0x7fff, 
-            expect: Uint8Array.from([0x7f, 0xff]),
-          }, 
-          {
-            value: -0x8000,
-            expect: Uint8Array.from([0x80, 0x00]), 
-          }, 
-          {
-            value: -0x01, 
-            expect: Uint8Array.from([0xff, 0xff]),
-          }
-        ];
-        
         for (const fixture of fixtures) {
           expect(tools.writeInt16(arr, fixture.value, 0, "BE")).toEqual(2);
-          expect(arr).toEqual(fixture.expect);
+          expect(arr).toEqual(fixture.expect.reverse());
         }
       });
 
@@ -524,21 +502,21 @@ describe(`Uint8Array tools`, () => {
         const arr = new Uint8Array(2);
         const fixtures = [
           {
-            value: 1, 
+            value: 1,
             expect: 1,
           },
           {
-            value: 0x7fff, 
+            value: 0x7fff,
             expect: 0x7fff,
-          }, 
+          },
           {
             value: -0x8000,
-            expect: -0x8000, 
-          }, 
+            expect: -0x8000,
+          },
           {
-            value: -0x01, 
+            value: -0x01,
             expect: -0x01,
-          }
+          },
         ];
 
         for (const fixture of fixtures) {
@@ -549,6 +527,163 @@ describe(`Uint8Array tools`, () => {
         for (const fixture of fixtures) {
           tools.writeInt16(arr, fixture.value, 0, "BE");
           expect(tools.readInt16(arr, 0, "BE")).toEqual(fixture.expect);
+        }
+      });
+
+      it("should be able to writeInt32", () => {
+        const arr = new Uint8Array(4);
+        const fixtures = [
+          {
+            value: 1,
+            expect: Uint8Array.from([1, 0, 0, 0]),
+          },
+          {
+            value: 0x7fffffff,
+            expect: Uint8Array.from([0xff, 0xff, 0xff, 0x7f]),
+          },
+          {
+            value: -0x80000000,
+            expect: Uint8Array.from([0x00, 0x00, 0x00, 0x80]),
+          },
+          {
+            value: -0x01,
+            expect: Uint8Array.from([0xff, 0xff, 0xff, 0xff]),
+          },
+        ];
+
+        for (const fixture of fixtures) {
+          expect(tools.writeInt32(arr, fixture.value, 0, "LE")).toEqual(4);
+          expect(arr).toEqual(fixture.expect);
+        }
+
+        for (const fixture of fixtures) {
+          expect(tools.writeInt32(arr, fixture.value, 0, "BE")).toEqual(4);
+          expect(arr).toEqual(fixture.expect.reverse());
+        }
+      });
+
+      it("should be able to readInt32", () => {
+        const arr = new Uint8Array(4);
+
+        const fixtures = [
+          {
+            value: 1,
+            expect: 1,
+          },
+          {
+            value: 0x7fffffff,
+            expect: 0x7fffffff,
+          },
+          {
+            value: -0x80000000,
+            expect: -0x80000000,
+          },
+          {
+            value: -0x01,
+            expect: -0x01,
+          },
+        ];
+
+        for (const fixture of fixtures) {
+          tools.writeInt32(arr, fixture.value, 0, "LE");
+          expect(tools.readInt32(arr, 0, "LE")).toEqual(fixture.expect);
+        }
+
+        for (const fixture of fixtures) {
+          tools.writeInt32(arr, fixture.value, 0, "BE");
+          expect(tools.readInt32(arr, 0, "BE")).toEqual(fixture.expect);
+        }
+      });
+
+      it("should be able to writeInt64", () => {
+        const arr = new Uint8Array(8);
+        const fixtures = [
+          {
+            value: 1n,
+            expect: Uint8Array.from([1, 0, 0, 0, 0, 0, 0, 0]),
+          },
+          {
+            value: 0x7fffffffffffffffn,
+            expect: Uint8Array.from([
+              0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x7f,
+            ]),
+          },
+          {
+            value: -0x8000000000000000n,
+            expect: Uint8Array.from([
+              0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80,
+            ]),
+          },
+          {
+            value: -0x01n,
+            expect: Uint8Array.from([
+              0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+            ]),
+          },
+        ];
+
+        for (const fixture of fixtures) {
+          expect(tools.writeInt64(arr, fixture.value, 0, "LE")).toEqual(8);
+          expect(arr).toEqual(fixture.expect);
+        }
+
+        for (const fixture of fixtures) {
+          expect(tools.writeInt64(arr, fixture.value, 0, "BE")).toEqual(8);
+          expect(arr).toEqual(fixture.expect.reverse());
+        }
+      });
+
+      it("should be able to readInt64", () => {
+        const arr = new Uint8Array(8);
+
+        const fixtures = [
+          {
+            value: 1n,
+            expect: 1n,
+          },
+          {
+            value: 0x7fffffffffffffffn,
+            expect: 0x7fffffffffffffffn,
+          },
+          {
+            value: -0x8000000000000000n,
+            expect: -0x8000000000000000n,
+          },
+          {
+            value: -0x01n,
+            expect: -0x01n,
+          },
+        ];
+
+        for (const fixture of fixtures) {
+          tools.writeInt64(arr, fixture.value, 0, "LE");
+          expect(tools.readInt64(arr, 0, "LE")).toEqual(fixture.expect);
+        }
+
+        for (const fixture of fixtures) {
+          tools.writeInt64(arr, fixture.value, 0, "BE");
+          expect(tools.readInt64(arr, 0, "BE")).toEqual(fixture.expect);
+        }
+      });
+
+      it("signed integer read-write functions should throw an error if the offset is out of bounds", () => {
+        const operation = ["read", "write"];
+        const nums = [0, 1, 2, 3];
+
+        for (let i = 0; i < operation.length; i++) {
+          for (let j = 0; j < nums.length; j++) {
+            const fnName =
+              operation[i] + "Int" + ((1 << nums[j]) * 8).toString();
+            const val = j === 4 ? 1n : 1;
+            for (const endian of ["BE", "LE"]) {
+              expect(() =>
+                // @ts-ignore
+                tools[fnName](new Uint8Array(j + 1), val, j + 1, endian)
+              ).toThrowError(
+                new Error("Offset is outside the bounds of Uint8Array")
+              );
+            }
+          }
         }
       });
     });

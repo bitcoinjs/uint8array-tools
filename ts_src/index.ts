@@ -191,17 +191,16 @@ export function readUInt64(
 export function writeInt8(
   buffer: Uint8Array,
   value: number,
-  offset: number,
+  offset: number
 ): number {
   if (offset + 1 > buffer.length) {
     throw new Error("Offset is outside the bounds of Uint8Array");
   }
 
-  if(value > 0x7f || value < -0x80) {
-     throw new RangeError(`The value of "value" is out of range. It must be >= -128 and <= 127. Received ${value}`);
-  }
+  const buf = Buffer.alloc(1);
+  buf.writeInt8(value, 0);
+  buffer.set(Uint8Array.from(buf), offset);
 
-  buffer[offset] = value;
   return offset + 1;
 }
 
@@ -215,20 +214,60 @@ export function writeInt16(
     throw new Error("Offset is outside the bounds of Uint8Array");
   }
 
-  if(value > 0x7fff || value < -0x8000) {
-     throw new RangeError(`The value of "value" is out of range. It must be >= -32768 and <= 32767. Received ${value}`);
+  littleEndian = littleEndian.toUpperCase() as endian;
+
+  const buf = Buffer.alloc(2);
+  if (littleEndian === "LE") {
+    buf.writeInt16LE(value, 0);
+  } else {
+    buf.writeInt16BE(value, 0);
+  }
+  buffer.set(Uint8Array.from(buf), offset);
+  return offset + 2;
+}
+
+export function writeInt32(
+  buffer: Uint8Array,
+  value: number,
+  offset: number,
+  littleEndian: endian
+): number {
+  if (offset + 4 > buffer.length) {
+    throw new Error("Offset is outside the bounds of Uint8Array");
   }
 
   littleEndian = littleEndian.toUpperCase() as endian;
 
+  const buf = Buffer.alloc(4);
   if (littleEndian === "LE") {
-    buffer[offset] = value & 0xff;
-    buffer[offset + 1] = (value >> 8) & 0xff;
+    buf.writeInt32LE(value, 0);
   } else {
-    buffer[offset] = (value >> 8) & 0xff;
-    buffer[offset + 1] = value & 0xff;
+    buf.writeInt32BE(value, 0);
   }
-  return offset + 2;
+  buffer.set(Uint8Array.from(buf), offset);
+  return offset + 4;
+}
+
+export function writeInt64(
+  buffer: Uint8Array,
+  value: bigint,
+  offset: number,
+  littleEndian: endian
+): number {
+  if (offset + 8 > buffer.length) {
+    throw new Error("Offset is outside the bounds of Uint8Array");
+  }
+
+  littleEndian = littleEndian.toUpperCase() as endian;
+
+  const buf = Buffer.alloc(8);
+  if (littleEndian === "LE") {
+    buf.writeBigInt64LE(value, 0);
+  } else {
+    buf.writeBigInt64BE(value, 0);
+  }
+  buffer.set(Uint8Array.from(buf), offset);
+  return offset + 8;
 }
 
 export function readInt8(buffer: Uint8Array, offset: number): number {
@@ -251,9 +290,45 @@ export function readInt16(
 
   littleEndian = littleEndian.toUpperCase() as endian;
 
-  if(littleEndian === "LE") {
+  if (littleEndian === "LE") {
     return Buffer.from(buffer).readInt16LE(offset);
-  }else {
+  } else {
     return Buffer.from(buffer).readInt16BE(offset);
+  }
+}
+
+export function readInt32(
+  buffer: Uint8Array,
+  offset: number,
+  littleEndian: endian
+): number {
+  if (offset + 4 > buffer.length) {
+    throw new Error("Offset is outside the bounds of Uint8Array");
+  }
+
+  littleEndian = littleEndian.toUpperCase() as endian;
+
+  if (littleEndian === "LE") {
+    return Buffer.from(buffer).readInt32LE(offset);
+  } else {
+    return Buffer.from(buffer).readInt32BE(offset);
+  }
+}
+
+export function readInt64(
+  buffer: Uint8Array,
+  offset: number,
+  littleEndian: endian
+): bigint {
+  if (offset + 8 > buffer.length) {
+    throw new Error("Offset is outside the bounds of Uint8Array");
+  }
+
+  littleEndian = littleEndian.toUpperCase() as endian;
+
+  if (littleEndian === "LE") {
+    return Buffer.from(buffer).readBigInt64LE(offset);
+  } else {
+    return Buffer.from(buffer).readBigInt64BE(offset);
   }
 }
