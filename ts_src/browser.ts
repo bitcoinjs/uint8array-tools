@@ -306,3 +306,146 @@ export function readUInt64(
     return num;
   }
 }
+
+export function writeInt8(
+  buffer: Uint8Array,
+  value: number,
+  offset: number,
+): number {
+  if (offset + 1 > buffer.length) {
+    throw new Error("Offset is outside the bounds of Uint8Array");
+  }
+
+  if(value > 0x7f || value < -0x80) {
+     throw new RangeError(`The value of "value" is out of range. It must be >= -128 and <= 127. Received ${value}`);
+  }
+
+    buffer[offset] = value;
+  return offset + 1;
+}
+
+export function writeInt16(
+  buffer: Uint8Array,
+  value: number,
+  offset: number,
+  littleEndian: endian
+): number {
+  if (offset + 2 > buffer.length) {
+    throw new Error("Offset is outside the bounds of Uint8Array");
+  }
+
+  if(value > 0x7fff || value < -0x8000) {
+     throw new RangeError(`The value of "value" is out of range. It must be >= -32768 and <= 32767. Received ${value}`);
+  }
+
+  littleEndian = littleEndian.toUpperCase() as endian;
+
+  if (littleEndian === "LE") {
+    buffer[offset] = value & 0xff;
+    buffer[offset + 1] = (value >> 8) & 0xff;
+  } else {
+    buffer[offset] = (value >> 8) & 0xff;
+    buffer[offset + 1] = value & 0xff;
+  }
+  return offset + 2;
+}
+
+export function writeInt32(
+  buffer: Uint8Array,
+  value: number,
+  offset: number,
+  littleEndian: endian
+): number {
+  if (offset + 4 > buffer.length) {
+    throw new Error("Offset is outside the bounds of Uint8Array");
+  }
+
+  littleEndian = littleEndian.toUpperCase() as endian;
+
+  if (littleEndian === "LE") {
+    buffer[offset] = value & 0xff;
+    buffer[offset + 1] = (value >> 8) & 0xff;
+    buffer[offset + 2] = (value >> 16) & 0xff;
+    buffer[offset + 3] = (value >> 24) & 0xff;
+  } else {
+    buffer[offset] = (value >> 24) & 0xff;
+    buffer[offset + 1] = (value >> 16) & 0xff;
+    buffer[offset + 2] = (value >> 8) & 0xff;
+    buffer[offset + 3] = value & 0xff;
+  }
+  return offset + 4;
+}
+
+export function writeInt64(
+  buffer: Uint8Array,
+  value: bigint,
+  offset: number,
+  littleEndian: endian
+): number {
+  if (offset + 8 > buffer.length) {
+    throw new Error("Offset is outside the bounds of Uint8Array");
+  }
+
+  littleEndian = littleEndian.toUpperCase() as endian;
+
+  if (littleEndian === "LE") {
+    buffer[offset] = Number(value & 0xffn);
+    buffer[offset + 1] = Number((value >> 8n) & 0xffn);
+    buffer[offset + 2] = Number((value >> 16n) & 0xffn);
+    buffer[offset + 3] = Number((value >> 24n) & 0xffn);
+    buffer[offset + 4] = Number((value >> 32n) & 0xffn);
+    buffer[offset + 5] = Number((value >> 40n) & 0xffn);
+    buffer[offset + 6] = Number((value >> 48n) & 0xffn);
+    buffer[offset + 7] = Number((value >> 56n) & 0xffn);
+  } else {
+    buffer[offset] = Number((value >> 56n) & 0xffn);
+    buffer[offset + 1] = Number((value >> 48n) & 0xffn);
+    buffer[offset + 2] = Number((value >> 40n) & 0xffn); 
+    buffer[offset + 3] = Number((value >> 32n) & 0xffn);
+    buffer[offset + 4] = Number((value >> 24n) & 0xffn);
+    buffer[offset + 5] = Number((value >> 16n) & 0xffn);
+    buffer[offset + 6] = Number((value >> 8n) & 0xffn);
+    buffer[offset + 7] = Number(value & 0xffn);
+  }
+
+  return offset + 8;
+}
+
+export function readInt8(
+  buffer: Uint8Array,
+  offset: number
+): number {
+  if (offset + 1 > buffer.length) {
+    throw new Error("Offset is outside the bounds of Uint8Array");
+  }
+
+  const val = buffer[offset];
+
+  if (val <= 0x7f) {
+    return val;
+  }else {
+    return (val - 0x100);
+  }
+}
+
+export function readInt16(
+  buffer: Uint8Array,
+  offset: number,
+  littleEndian: endian
+): number {
+  if (offset + 2 > buffer.length) {
+    throw new Error("Offset is outside the bounds of Uint8Array");
+  }
+
+  littleEndian = littleEndian.toUpperCase() as endian;
+
+  if (littleEndian === "LE" && buffer[offset + 1] <= 0x7f) {
+    return buffer[offset] + (buffer[offset + 1] << 8);
+  } else if(littleEndian === "LE" && buffer[offset + 1] > 0x7f) {
+    return buffer[offset] + (buffer[offset + 1] << 8) - 0x10000;
+  } else if (littleEndian === "BE" && buffer[offset] <= 0x7f) {
+    return (buffer[offset] << 8) + buffer[offset + 1];
+  }else {
+    return (buffer[offset] << 8) + buffer[offset + 1] - 0x10000;
+  }
+}
