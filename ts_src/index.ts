@@ -37,7 +37,7 @@ export function writeUInt8(
   buffer: Uint8Array,
   offset: number,
   value: number
-): void {
+): number {
   if (offset + 1 > buffer.length) {
     throw new Error("Offset is outside the bounds of Uint8Array");
   }
@@ -45,6 +45,8 @@ export function writeUInt8(
   const buf = Buffer.alloc(1);
   buf.writeUInt8(value, 0);
   buffer.set(Uint8Array.from(buf), offset);
+
+  return offset + 1;
 }
 
 export function writeUInt16(
@@ -52,7 +54,7 @@ export function writeUInt16(
   offset: number,
   value: number,
   littleEndian: endian
-): void {
+): number {
   if (offset + 2 > buffer.length) {
     throw new Error("Offset is outside the bounds of Uint8Array");
   }
@@ -67,6 +69,8 @@ export function writeUInt16(
     buf.writeUInt16BE(value, 0);
   }
   buffer.set(Uint8Array.from(buf), offset);
+
+  return offset + 2;
 }
 
 export function writeUInt32(
@@ -74,7 +78,7 @@ export function writeUInt32(
   offset: number,
   value: number,
   littleEndian: endian
-): void {
+): number {
   if (offset + 4 > buffer.length) {
     throw new Error("Offset is outside the bounds of Uint8Array");
   }
@@ -89,6 +93,8 @@ export function writeUInt32(
     buf.writeUInt32BE(value, 0);
   }
   buffer.set(Uint8Array.from(buf), offset);
+
+  return offset + 4;
 }
 
 export function writeUInt64(
@@ -96,7 +102,7 @@ export function writeUInt64(
   offset: number,
   value: bigint,
   littleEndian: endian
-): void {
+): number {
   if (offset + 8 > buffer.length) {
     throw new Error("Offset is outside the bounds of Uint8Array");
   }
@@ -117,6 +123,8 @@ export function writeUInt64(
     buf.writeBigUInt64BE(value, 0);
   }
   buffer.set(Uint8Array.from(buf), offset);
+
+  return offset + 8;
 }
 
 export function readUInt8(buffer: Uint8Array, offset: number): number {
@@ -190,8 +198,8 @@ export function readUInt64(
 
 export function writeInt8(
   buffer: Uint8Array,
-  value: number,
-  offset: number
+  offset: number,
+  value: number
 ): number {
   if (offset + 1 > buffer.length) {
     throw new Error("Offset is outside the bounds of Uint8Array");
@@ -206,8 +214,8 @@ export function writeInt8(
 
 export function writeInt16(
   buffer: Uint8Array,
-  value: number,
   offset: number,
+  value: number,
   littleEndian: endian
 ): number {
   if (offset + 2 > buffer.length) {
@@ -228,8 +236,8 @@ export function writeInt16(
 
 export function writeInt32(
   buffer: Uint8Array,
-  value: number,
   offset: number,
+  value: number,
   littleEndian: endian
 ): number {
   if (offset + 4 > buffer.length) {
@@ -250,12 +258,16 @@ export function writeInt32(
 
 export function writeInt64(
   buffer: Uint8Array,
-  value: bigint,
   offset: number,
+  value: bigint,
   littleEndian: endian
 ): number {
   if (offset + 8 > buffer.length) {
     throw new Error("Offset is outside the bounds of Uint8Array");
+  }
+
+  if(value > 0x7fffffffffffffffn || value < -0x8000000000000000n) {
+    throw new Error(`The value of "value" is out of range. It must be >= ${-0x8000000000000000n} and <= ${0x7fffffffffffffffn}. Received ${value}`);
   }
 
   littleEndian = littleEndian.toUpperCase() as endian;

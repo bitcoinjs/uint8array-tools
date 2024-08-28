@@ -434,7 +434,7 @@ describe(`Uint8Array tools`, () => {
         ];
 
         for (const fixture of fixtures) {
-          expect(tools.writeInt8(arr, fixture.value, 0)).toEqual(1);
+          expect(tools.writeInt8(arr, 0, fixture.value)).toEqual(1);
           expect(arr).toEqual(fixture.expect);
         }
       });
@@ -461,7 +461,7 @@ describe(`Uint8Array tools`, () => {
         ];
 
         for (const fixture of fixtures) {
-          tools.writeInt8(arr, fixture.value, 0);
+          tools.writeInt8(arr, 0, fixture.value);
           expect(tools.readInt8(arr, 0)).toEqual(fixture.expect);
         }
       });
@@ -488,12 +488,12 @@ describe(`Uint8Array tools`, () => {
         ];
 
         for (const fixture of fixtures) {
-          expect(tools.writeInt16(arr, fixture.value, 0, "LE")).toEqual(2);
+          expect(tools.writeInt16(arr, 0, fixture.value, "LE")).toEqual(2);
           expect(arr).toEqual(fixture.expect);
         }
 
         for (const fixture of fixtures) {
-          expect(tools.writeInt16(arr, fixture.value, 0, "BE")).toEqual(2);
+          expect(tools.writeInt16(arr, 0, fixture.value, "BE")).toEqual(2);
           expect(arr).toEqual(fixture.expect.reverse());
         }
       });
@@ -520,12 +520,12 @@ describe(`Uint8Array tools`, () => {
         ];
 
         for (const fixture of fixtures) {
-          tools.writeInt16(arr, fixture.value, 0, "LE");
+          tools.writeInt16(arr, 0, fixture.value, "LE");
           expect(tools.readInt16(arr, 0, "LE")).toEqual(fixture.expect);
         }
 
         for (const fixture of fixtures) {
-          tools.writeInt16(arr, fixture.value, 0, "BE");
+          tools.writeInt16(arr, 0, fixture.value, "BE");
           expect(tools.readInt16(arr, 0, "BE")).toEqual(fixture.expect);
         }
       });
@@ -552,12 +552,12 @@ describe(`Uint8Array tools`, () => {
         ];
 
         for (const fixture of fixtures) {
-          expect(tools.writeInt32(arr, fixture.value, 0, "LE")).toEqual(4);
+          expect(tools.writeInt32(arr, 0, fixture.value, "LE")).toEqual(4);
           expect(arr).toEqual(fixture.expect);
         }
 
         for (const fixture of fixtures) {
-          expect(tools.writeInt32(arr, fixture.value, 0, "BE")).toEqual(4);
+          expect(tools.writeInt32(arr, 0, fixture.value,  "BE")).toEqual(4);
           expect(arr).toEqual(fixture.expect.reverse());
         }
       });
@@ -585,12 +585,12 @@ describe(`Uint8Array tools`, () => {
         ];
 
         for (const fixture of fixtures) {
-          tools.writeInt32(arr, fixture.value, 0, "LE");
+          tools.writeInt32(arr, 0, fixture.value, "LE");
           expect(tools.readInt32(arr, 0, "LE")).toEqual(fixture.expect);
         }
 
         for (const fixture of fixtures) {
-          tools.writeInt32(arr, fixture.value, 0, "BE");
+          tools.writeInt32(arr, 0, fixture.value, "BE");
           expect(tools.readInt32(arr, 0, "BE")).toEqual(fixture.expect);
         }
       });
@@ -623,12 +623,12 @@ describe(`Uint8Array tools`, () => {
         ];
 
         for (const fixture of fixtures) {
-          expect(tools.writeInt64(arr, fixture.value, 0, "LE")).toEqual(8);
+          expect(tools.writeInt64(arr, 0, fixture.value, "LE")).toEqual(8);
           expect(arr).toEqual(fixture.expect);
         }
 
         for (const fixture of fixtures) {
-          expect(tools.writeInt64(arr, fixture.value, 0, "BE")).toEqual(8);
+          expect(tools.writeInt64(arr, 0, fixture.value, "BE")).toEqual(8);
           expect(arr).toEqual(fixture.expect.reverse());
         }
       });
@@ -656,13 +656,41 @@ describe(`Uint8Array tools`, () => {
         ];
 
         for (const fixture of fixtures) {
-          tools.writeInt64(arr, fixture.value, 0, "LE");
+          tools.writeInt64(arr, 0, fixture.value, "LE");
           expect(tools.readInt64(arr, 0, "LE")).toEqual(fixture.expect);
         }
 
         for (const fixture of fixtures) {
-          tools.writeInt64(arr, fixture.value, 0, "BE");
+          tools.writeInt64(arr, 0, fixture.value, "BE");
           expect(tools.readInt64(arr, 0, "BE")).toEqual(fixture.expect);
+        }
+      });
+
+      it("signed integer functions should throw if the value is out of range", () => {
+        const nums = [0, 1, 2, 3];
+
+        for(let i = 0; i < nums.length; i++) {
+          const bitLength = (1 << nums[i]) * 8;
+          const fnName = "writeInt" + (bitLength).toString();
+          const rawLow = BigInt(-(2n ** BigInt(bitLength - 1))); 
+          const rawHigh = -rawLow - 1n;
+          const rawHighValue = rawHigh + 1n;
+          const rawLowValue = rawLow - 1n;
+
+          const low = i === 3 ? rawLow : Number(rawLow);
+          const high = i === 3 ? rawHigh : Number(rawHigh);
+          const values = [i === 3 ? rawLowValue : Number(rawLowValue), i === 3 ? rawHighValue : Number(rawHighValue)];
+
+          for (const value of values) {
+            for(const endian of ["BE", "LE"]) {
+              expect(() =>
+                //@ts-ignore
+                tools[fnName](new Uint8Array(bitLength / 8 + 1), 0, value, endian)
+              ).toThrowError(
+                new Error(`The value of "value" is out of range. It must be >= ${low} and <= ${high}. Received ${value}`)
+              );
+            }
+          }
         }
       });
 
