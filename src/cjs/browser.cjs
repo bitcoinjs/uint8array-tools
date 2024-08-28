@@ -267,6 +267,9 @@ function writeInt8(buffer, offset, value) {
     if (offset + 1 > buffer.length) {
         throw new Error("Offset is outside the bounds of Uint8Array");
     }
+    if (value > 0x7f || value < -0x80) {
+        throw new Error(`The value of "value" is out of range. It must be >= ${-0x80} and <= ${0x7f}. Received ${value}`);
+    }
     buffer[offset] = value;
     return offset + 1;
 }
@@ -274,6 +277,9 @@ exports.writeInt8 = writeInt8;
 function writeInt16(buffer, offset, value, littleEndian) {
     if (offset + 2 > buffer.length) {
         throw new Error("Offset is outside the bounds of Uint8Array");
+    }
+    if (value > 0x7fff || value < -0x8000) {
+        throw new Error(`The value of "value" is out of range. It must be >= ${-0x8000} and <= ${0x7fff}. Received ${value}`);
     }
     littleEndian = littleEndian.toUpperCase();
     if (littleEndian === "LE") {
@@ -290,6 +296,9 @@ exports.writeInt16 = writeInt16;
 function writeInt32(buffer, offset, value, littleEndian) {
     if (offset + 4 > buffer.length) {
         throw new Error("Offset is outside the bounds of Uint8Array");
+    }
+    if (value > 0x7fffffff || value < -0x80000000) {
+        throw new Error(`The value of "value" is out of range. It must be >= ${-0x80000000} and <= ${0x7fffffff}. Received ${value}`);
     }
     littleEndian = littleEndian.toUpperCase();
     if (littleEndian === "LE") {
@@ -310,6 +319,9 @@ exports.writeInt32 = writeInt32;
 function writeInt64(buffer, offset, value, littleEndian) {
     if (offset + 8 > buffer.length) {
         throw new Error("Offset is outside the bounds of Uint8Array");
+    }
+    if (value > 0x7fffffffffffffffn || value < -0x8000000000000000n) {
+        throw new Error(`The value of "value" is out of range. It must be >= ${-0x8000000000000000n} and <= ${0x7fffffffffffffffn}. Received ${value}`);
     }
     littleEndian = littleEndian.toUpperCase();
     if (littleEndian === "LE") {
