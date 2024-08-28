@@ -266,8 +266,10 @@ export function writeInt64(
     throw new Error("Offset is outside the bounds of Uint8Array");
   }
 
-  if(value > 0x7fffffffffffffffn || value < -0x8000000000000000n) {
-    throw new Error(`The value of "value" is out of range. It must be >= ${-0x8000000000000000n} and <= ${0x7fffffffffffffffn}. Received ${value}`);
+  if (value > 0x7fffffffffffffffn || value < -0x8000000000000000n) {
+    throw new Error(
+      `The value of "value" is out of range. It must be >= ${-0x8000000000000000n} and <= ${0x7fffffffffffffffn}. Received ${value}`
+    );
   }
 
   littleEndian = littleEndian.toUpperCase() as endian;

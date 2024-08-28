@@ -557,7 +557,7 @@ describe(`Uint8Array tools`, () => {
         }
 
         for (const fixture of fixtures) {
-          expect(tools.writeInt32(arr, 0, fixture.value,  "BE")).toEqual(4);
+          expect(tools.writeInt32(arr, 0, fixture.value, "BE")).toEqual(4);
           expect(arr).toEqual(fixture.expect.reverse());
         }
       });
@@ -669,25 +669,34 @@ describe(`Uint8Array tools`, () => {
       it("signed integer functions should throw if the value is out of range", () => {
         const nums = [0, 1, 2, 3];
 
-        for(let i = 0; i < nums.length; i++) {
+        for (let i = 0; i < nums.length; i++) {
           const bitLength = (1 << nums[i]) * 8;
-          const fnName = "writeInt" + (bitLength).toString();
-          const rawLow = BigInt(-(2n ** BigInt(bitLength - 1))); 
+          const fnName = "writeInt" + bitLength.toString();
+          const rawLow = BigInt(-(2n ** BigInt(bitLength - 1)));
           const rawHigh = -rawLow - 1n;
           const rawHighValue = rawHigh + 1n;
           const rawLowValue = rawLow - 1n;
 
           const low = i === 3 ? rawLow : Number(rawLow);
           const high = i === 3 ? rawHigh : Number(rawHigh);
-          const values = [i === 3 ? rawLowValue : Number(rawLowValue), i === 3 ? rawHighValue : Number(rawHighValue)];
+          const values = [
+            i === 3 ? rawLowValue : Number(rawLowValue),
+            i === 3 ? rawHighValue : Number(rawHighValue),
+          ];
 
           for (const value of values) {
-            for(const endian of ["BE", "LE"]) {
+            for (const endian of ["BE", "LE"]) {
               expect(() =>
-                //@ts-ignore
-                tools[fnName](new Uint8Array(bitLength / 8 + 1), 0, value, endian)
+                tools[fnName](
+                  new Uint8Array(bitLength / 8 + 1),
+                  0,
+                  value,
+                  endian
+                )
               ).toThrowError(
-                new Error(`The value of "value" is out of range. It must be >= ${low} and <= ${high}. Received ${value}`)
+                new Error(
+                  `The value of "value" is out of range. It must be >= ${low} and <= ${high}. Received ${value}`
+                )
               );
             }
           }
@@ -705,7 +714,6 @@ describe(`Uint8Array tools`, () => {
             const val = j === 4 ? 1n : 1;
             for (const endian of ["BE", "LE"]) {
               expect(() =>
-                // @ts-ignore
                 tools[fnName](new Uint8Array(j + 1), val, j + 1, endian)
               ).toThrowError(
                 new Error("Offset is outside the bounds of Uint8Array")

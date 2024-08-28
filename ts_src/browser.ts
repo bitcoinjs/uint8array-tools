@@ -324,8 +324,10 @@ export function writeInt8(
     throw new Error("Offset is outside the bounds of Uint8Array");
   }
 
-  if(value > 0x7f || value < -0x80) {
-    throw new Error(`The value of "value" is out of range. It must be >= ${-0x80} and <= ${0x7f}. Received ${value}`);
+  if (value > 0x7f || value < -0x80) {
+    throw new Error(
+      `The value of "value" is out of range. It must be >= ${-0x80} and <= ${0x7f}. Received ${value}`
+    );
   }
 
   buffer[offset] = value;
@@ -342,8 +344,10 @@ export function writeInt16(
     throw new Error("Offset is outside the bounds of Uint8Array");
   }
 
-  if(value > 0x7fff || value < -0x8000) {
-    throw new Error(`The value of "value" is out of range. It must be >= ${-0x8000} and <= ${0x7fff}. Received ${value}`);
+  if (value > 0x7fff || value < -0x8000) {
+    throw new Error(
+      `The value of "value" is out of range. It must be >= ${-0x8000} and <= ${0x7fff}. Received ${value}`
+    );
   }
 
   littleEndian = littleEndian.toUpperCase() as endian;
@@ -368,8 +372,10 @@ export function writeInt32(
     throw new Error("Offset is outside the bounds of Uint8Array");
   }
 
-  if(value > 0x7fffffff || value < -0x80000000) {
-    throw new Error(`The value of "value" is out of range. It must be >= ${-0x80000000} and <= ${0x7fffffff}. Received ${value}`);
+  if (value > 0x7fffffff || value < -0x80000000) {
+    throw new Error(
+      `The value of "value" is out of range. It must be >= ${-0x80000000} and <= ${0x7fffffff}. Received ${value}`
+    );
   }
 
   littleEndian = littleEndian.toUpperCase() as endian;
@@ -398,8 +404,10 @@ export function writeInt64(
     throw new Error("Offset is outside the bounds of Uint8Array");
   }
 
-  if(value > 0x7fffffffffffffffn || value < -0x8000000000000000n) {
-    throw new Error(`The value of "value" is out of range. It must be >= ${-0x8000000000000000n} and <= ${0x7fffffffffffffffn}. Received ${value}`);
+  if (value > 0x7fffffffffffffffn || value < -0x8000000000000000n) {
+    throw new Error(
+      `The value of "value" is out of range. It must be >= ${-0x8000000000000000n} and <= ${0x7fffffffffffffffn}. Received ${value}`
+    );
   }
 
   littleEndian = littleEndian.toUpperCase() as endian;
@@ -431,8 +439,6 @@ export function readInt8(buffer: Uint8Array, offset: number): number {
   if (offset + 1 > buffer.length) {
     throw new Error("Offset is outside the bounds of Uint8Array");
   }
-
-
 
   const val = buffer[offset];
 
