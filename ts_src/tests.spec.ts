@@ -687,6 +687,8 @@ describe(`Uint8Array tools`, () => {
           for (const value of values) {
             for (const endian of ["BE", "LE"]) {
               expect(() =>
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 tools[fnName](
                   new Uint8Array(bitLength / 8 + 1),
                   0,
@@ -714,6 +716,8 @@ describe(`Uint8Array tools`, () => {
             const val = j === 4 ? 1n : 1;
             for (const endian of ["BE", "LE"]) {
               expect(() =>
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 tools[fnName](new Uint8Array(j + 1), val, j + 1, endian)
               ).toThrowError(
                 new Error("Offset is outside the bounds of Uint8Array")
