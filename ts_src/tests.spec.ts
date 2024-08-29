@@ -411,6 +411,219 @@ describe(`Uint8Array tools`, () => {
           );
         }
       });
+
+      it("should be able to writeInt8", () => {
+        const arr = new Uint8Array(1);
+        const fixtures = [1, 0x7f, 0x0f, 0x1f, -0x80, -0x01, -0x0f, -0x1f];
+
+        for (const fixture of fixtures) {
+          const expected = Buffer.alloc(1);
+          expected.writeInt8(fixture, 0);
+          expect(tools.writeInt8(arr, 0, fixture)).toEqual(1);
+          expect(arr).toEqual(Uint8Array.from(expected));
+        }
+      });
+
+      it("should be able to readInt8", () => {
+        const arr = new Uint8Array(1);
+        const fixtures = [1, 0x7f, 0x0f, 0x1f, -0x80, -0x01, -0x0f, -0x1f];
+
+        for (const fixture of fixtures) {
+          tools.writeInt8(arr, 0, fixture);
+          expect(tools.readInt8(arr, 0)).toEqual(fixture);
+        }
+      });
+
+      it("should be able to writeInt16", () => {
+        const arr = new Uint8Array(2);
+
+        const fixtures = [
+          1, 0x7fff, 0x00ff, 0x01ff, -0x8000, -0x01, -0x00ff, -0x01ff,
+        ];
+        const expected = Buffer.alloc(2);
+
+        for (const fixture of fixtures) {
+          expected.writeInt16LE(fixture, 0);
+          expect(tools.writeInt16(arr, 0, fixture, "LE")).toEqual(2);
+          expect(arr).toEqual(Uint8Array.from(expected));
+        }
+
+        for (const fixture of fixtures) {
+          expected.writeInt16BE(fixture, 0);
+          expect(tools.writeInt16(arr, 0, fixture, "BE")).toEqual(2);
+          expect(arr).toEqual(Uint8Array.from(expected));
+        }
+      });
+
+      it("should be able to readInt16", () => {
+        const arr = new Uint8Array(2);
+        const fixtures = [
+          1, 0x7fff, 0x00ff, 0x01ff, -0x8000, -0x01, -0x00ff, -0x01ff,
+        ];
+
+        for (const fixture of fixtures) {
+          tools.writeInt16(arr, 0, fixture, "LE");
+          expect(tools.readInt16(arr, 0, "LE")).toEqual(fixture);
+        }
+
+        for (const fixture of fixtures) {
+          tools.writeInt16(arr, 0, fixture, "BE");
+          expect(tools.readInt16(arr, 0, "BE")).toEqual(fixture);
+        }
+      });
+
+      it("should be able to writeInt32", () => {
+        const arr = new Uint8Array(4);
+        const fixtures = [
+          1, 0x7fffffff, 0x0000ffff, 0x0001ffff, -0x80000000, -0x01,
+          -0x0000ffff, -0x0001ffff,
+        ];
+        const expected = Buffer.alloc(4);
+
+        for (const fixture of fixtures) {
+          expected.writeInt32LE(fixture, 0);
+          expect(tools.writeInt32(arr, 0, fixture, "LE")).toEqual(4);
+          expect(arr).toEqual(Uint8Array.from(expected));
+        }
+
+        for (const fixture of fixtures) {
+          expected.writeInt32BE(fixture, 0);
+          expect(tools.writeInt32(arr, 0, fixture, "BE")).toEqual(4);
+          expect(arr).toEqual(Uint8Array.from(expected));
+        }
+      });
+
+      it("should be able to readInt32", () => {
+        const arr = new Uint8Array(4);
+        const fixtures = [
+          1, 0x7fffffff, 0x0000ffff, 0x0001ffff, -0x80000000, -0x01,
+          -0x0000ffff, -0x0001ffff,
+        ];
+
+        for (const fixture of fixtures) {
+          tools.writeInt32(arr, 0, fixture, "LE");
+          expect(tools.readInt32(arr, 0, "LE")).toEqual(fixture);
+        }
+
+        for (const fixture of fixtures) {
+          tools.writeInt32(arr, 0, fixture, "BE");
+          expect(tools.readInt32(arr, 0, "BE")).toEqual(fixture);
+        }
+      });
+
+      it("should be able to writeInt64", () => {
+        const arr = new Uint8Array(8);
+
+        const fixtures = [
+          1n,
+          0x7fffffffffffffffn,
+          0x00000000ffffffffn,
+          0x00000001ffffffffn,
+          -0x8000000000000000n,
+          -0x01n,
+          -0x00000000ffffffffn,
+          -0x00000001ffffffffn,
+        ];
+        const expected = Buffer.alloc(8);
+
+        for (const fixture of fixtures) {
+          expected.writeBigInt64LE(fixture, 0);
+          expect(tools.writeInt64(arr, 0, fixture, "LE")).toEqual(8);
+          expect(arr).toEqual(Uint8Array.from(expected));
+        }
+
+        for (const fixture of fixtures) {
+          expected.writeBigInt64BE(fixture, 0);
+          expect(tools.writeInt64(arr, 0, fixture, "BE")).toEqual(8);
+          expect(arr).toEqual(Uint8Array.from(expected));
+        }
+      });
+
+      it("should be able to readInt64", () => {
+        const arr = new Uint8Array(8);
+
+        const fixtures = [
+          1n,
+          0x7fffffffffffffffn,
+          0x00000000ffffffffn,
+          0x00000001ffffffffn,
+          -0x8000000000000000n,
+          -0x01n,
+          -0x00000000ffffffffn,
+          -0x00000001ffffffffn,
+        ];
+
+        for (const fixture of fixtures) {
+          tools.writeInt64(arr, 0, fixture, "LE");
+          expect(tools.readInt64(arr, 0, "LE")).toEqual(fixture);
+        }
+
+        for (const fixture of fixtures) {
+          tools.writeInt64(arr, 0, fixture, "BE");
+          expect(tools.readInt64(arr, 0, "BE")).toEqual(fixture);
+        }
+      });
+
+      it("signed integer functions should throw if the value is out of range", () => {
+        const nums = [0, 1, 2, 3];
+
+        for (let i = 0; i < nums.length; i++) {
+          const bitLength = (1 << nums[i]) * 8;
+          const fnName = "writeInt" + bitLength.toString();
+          const rawLow = BigInt(-(2n ** BigInt(bitLength - 1)));
+          const rawHigh = -rawLow - 1n;
+          const rawHighValue = rawHigh + 1n;
+          const rawLowValue = rawLow - 1n;
+
+          const low = i === 3 ? rawLow : Number(rawLow);
+          const high = i === 3 ? rawHigh : Number(rawHigh);
+          const values = [
+            i === 3 ? rawLowValue : Number(rawLowValue),
+            i === 3 ? rawHighValue : Number(rawHighValue),
+          ];
+
+          for (const value of values) {
+            for (const endian of ["BE", "LE"]) {
+              expect(() =>
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                tools[fnName](
+                  new Uint8Array(bitLength / 8 + 1),
+                  0,
+                  value,
+                  endian
+                )
+              ).toThrowError(
+                new Error(
+                  `The value of "value" is out of range. It must be >= ${low} and <= ${high}. Received ${value}`
+                )
+              );
+            }
+          }
+        }
+      });
+
+      it("signed integer read-write functions should throw an error if the offset is out of bounds", () => {
+        const operation = ["read", "write"];
+        const nums = [0, 1, 2, 3];
+
+        for (let i = 0; i < operation.length; i++) {
+          for (let j = 0; j < nums.length; j++) {
+            const fnName =
+              operation[i] + "Int" + ((1 << nums[j]) * 8).toString();
+            const val = j === 4 ? 1n : 1;
+            for (const endian of ["BE", "LE"]) {
+              expect(() =>
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                tools[fnName](new Uint8Array(j + 1), val, j + 1, endian)
+              ).toThrowError(
+                new Error("Offset is outside the bounds of Uint8Array")
+              );
+            }
+          }
+        }
+      });
     });
   }
 });
