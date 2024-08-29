@@ -440,7 +440,6 @@ describe(`Uint8Array tools`, () => {
         const fixtures = [
           1, 0x7fff, 0x00ff, 0x01ff, -0x8000, -0x01, -0x00ff, -0x01ff,
         ];
-        
         const expected = Buffer.alloc(2);
 
         for (const fixture of fixtures) {
