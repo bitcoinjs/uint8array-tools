@@ -414,222 +414,129 @@ describe(`Uint8Array tools`, () => {
 
       it("should be able to writeInt8", () => {
         const arr = new Uint8Array(1);
-        const fixtures = [
-          {
-            value: 1,
-            expect: Uint8Array.from([1]),
-          },
-          {
-            value: 0x7f,
-            expect: Uint8Array.from([0x7f]),
-          },
-          {
-            value: -0x80,
-            expect: Uint8Array.from([0x80]),
-          },
-          {
-            value: -0x01,
-            expect: Uint8Array.from([0xff]),
-          },
-        ];
+        const fixtures = [1, 0x7f, 0x0f, 0x1f, -0x80, -0x01, -0x0f, -0x1f];
 
         for (const fixture of fixtures) {
-          expect(tools.writeInt8(arr, 0, fixture.value)).toEqual(1);
-          expect(arr).toEqual(fixture.expect);
+          const expected = Buffer.alloc(1);
+          expected.writeInt8(fixture, 0);
+          expect(tools.writeInt8(arr, 0, fixture)).toEqual(1);
+          expect(arr).toEqual(Uint8Array.from(expected));
         }
       });
 
       it("should be able to readInt8", () => {
         const arr = new Uint8Array(1);
-        const fixtures = [
-          {
-            value: 1,
-            expect: 1,
-          },
-          {
-            value: 0x7f,
-            expect: 0x7f,
-          },
-          {
-            value: -0x80,
-            expect: -0x80,
-          },
-          {
-            value: -0x01,
-            expect: -0x01,
-          },
-        ];
+        const fixtures = [1, 0x7f, 0x0f, 0x1f, -0x80, -0x01, -0x0f, -0x1f];
 
         for (const fixture of fixtures) {
-          tools.writeInt8(arr, 0, fixture.value);
-          expect(tools.readInt8(arr, 0)).toEqual(fixture.expect);
+          tools.writeInt8(arr, 0, fixture);
+          expect(tools.readInt8(arr, 0)).toEqual(fixture);
         }
       });
 
       it("should be able to writeInt16", () => {
         const arr = new Uint8Array(2);
+
         const fixtures = [
-          {
-            value: 1,
-            expect: Uint8Array.from([1, 0]),
-          },
-          {
-            value: 0x7fff,
-            expect: Uint8Array.from([0xff, 0x7f]),
-          },
-          {
-            value: -0x8000,
-            expect: Uint8Array.from([0x00, 0x80]),
-          },
-          {
-            value: -0x01,
-            expect: Uint8Array.from([0xff, 0xff]),
-          },
+          1, 0x7fff, 0x00ff, 0x01ff, -0x8000, -0x01, -0x00ff, -0x01ff,
         ];
+        
+        const expected = Buffer.alloc(2);
 
         for (const fixture of fixtures) {
-          expect(tools.writeInt16(arr, 0, fixture.value, "LE")).toEqual(2);
-          expect(arr).toEqual(fixture.expect);
+          expected.writeInt16LE(fixture, 0);
+          expect(tools.writeInt16(arr, 0, fixture, "LE")).toEqual(2);
+          expect(arr).toEqual(Uint8Array.from(expected));
         }
 
         for (const fixture of fixtures) {
-          expect(tools.writeInt16(arr, 0, fixture.value, "BE")).toEqual(2);
-          expect(arr).toEqual(fixture.expect.reverse());
+          expected.writeInt16BE(fixture, 0);
+          expect(tools.writeInt16(arr, 0, fixture, "BE")).toEqual(2);
+          expect(arr).toEqual(Uint8Array.from(expected));
         }
       });
 
       it("should be able to readInt16", () => {
         const arr = new Uint8Array(2);
         const fixtures = [
-          {
-            value: 1,
-            expect: 1,
-          },
-          {
-            value: 0x7fff,
-            expect: 0x7fff,
-          },
-          {
-            value: -0x8000,
-            expect: -0x8000,
-          },
-          {
-            value: -0x01,
-            expect: -0x01,
-          },
+          1, 0x7fff, 0x00ff, 0x01ff, -0x8000, -0x01, -0x00ff, -0x01ff,
         ];
 
         for (const fixture of fixtures) {
-          tools.writeInt16(arr, 0, fixture.value, "LE");
-          expect(tools.readInt16(arr, 0, "LE")).toEqual(fixture.expect);
+          tools.writeInt16(arr, 0, fixture, "LE");
+          expect(tools.readInt16(arr, 0, "LE")).toEqual(fixture);
         }
 
         for (const fixture of fixtures) {
-          tools.writeInt16(arr, 0, fixture.value, "BE");
-          expect(tools.readInt16(arr, 0, "BE")).toEqual(fixture.expect);
+          tools.writeInt16(arr, 0, fixture, "BE");
+          expect(tools.readInt16(arr, 0, "BE")).toEqual(fixture);
         }
       });
 
       it("should be able to writeInt32", () => {
         const arr = new Uint8Array(4);
         const fixtures = [
-          {
-            value: 1,
-            expect: Uint8Array.from([1, 0, 0, 0]),
-          },
-          {
-            value: 0x7fffffff,
-            expect: Uint8Array.from([0xff, 0xff, 0xff, 0x7f]),
-          },
-          {
-            value: -0x80000000,
-            expect: Uint8Array.from([0x00, 0x00, 0x00, 0x80]),
-          },
-          {
-            value: -0x01,
-            expect: Uint8Array.from([0xff, 0xff, 0xff, 0xff]),
-          },
+          1, 0x7fffffff, 0x0000ffff, 0x0001ffff, -0x80000000, -0x01,
+          -0x0000ffff, -0x0001ffff,
         ];
+        const expected = Buffer.alloc(4);
 
         for (const fixture of fixtures) {
-          expect(tools.writeInt32(arr, 0, fixture.value, "LE")).toEqual(4);
-          expect(arr).toEqual(fixture.expect);
+          expected.writeInt32LE(fixture, 0);
+          expect(tools.writeInt32(arr, 0, fixture, "LE")).toEqual(4);
+          expect(arr).toEqual(Uint8Array.from(expected));
         }
 
         for (const fixture of fixtures) {
-          expect(tools.writeInt32(arr, 0, fixture.value, "BE")).toEqual(4);
-          expect(arr).toEqual(fixture.expect.reverse());
+          expected.writeInt32BE(fixture, 0);
+          expect(tools.writeInt32(arr, 0, fixture, "BE")).toEqual(4);
+          expect(arr).toEqual(Uint8Array.from(expected));
         }
       });
 
       it("should be able to readInt32", () => {
         const arr = new Uint8Array(4);
-
         const fixtures = [
-          {
-            value: 1,
-            expect: 1,
-          },
-          {
-            value: 0x7fffffff,
-            expect: 0x7fffffff,
-          },
-          {
-            value: -0x80000000,
-            expect: -0x80000000,
-          },
-          {
-            value: -0x01,
-            expect: -0x01,
-          },
+          1, 0x7fffffff, 0x0000ffff, 0x0001ffff, -0x80000000, -0x01,
+          -0x0000ffff, -0x0001ffff,
         ];
 
         for (const fixture of fixtures) {
-          tools.writeInt32(arr, 0, fixture.value, "LE");
-          expect(tools.readInt32(arr, 0, "LE")).toEqual(fixture.expect);
+          tools.writeInt32(arr, 0, fixture, "LE");
+          expect(tools.readInt32(arr, 0, "LE")).toEqual(fixture);
         }
 
         for (const fixture of fixtures) {
-          tools.writeInt32(arr, 0, fixture.value, "BE");
-          expect(tools.readInt32(arr, 0, "BE")).toEqual(fixture.expect);
+          tools.writeInt32(arr, 0, fixture, "BE");
+          expect(tools.readInt32(arr, 0, "BE")).toEqual(fixture);
         }
       });
 
       it("should be able to writeInt64", () => {
         const arr = new Uint8Array(8);
+
         const fixtures = [
-          {
-            value: 1n,
-            expect: Uint8Array.from([1, 0, 0, 0, 0, 0, 0, 0]),
-          },
-          {
-            value: 0x7fffffffffffffffn,
-            expect: Uint8Array.from([
-              0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x7f,
-            ]),
-          },
-          {
-            value: -0x8000000000000000n,
-            expect: Uint8Array.from([
-              0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80,
-            ]),
-          },
-          {
-            value: -0x01n,
-            expect: Uint8Array.from([
-              0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-            ]),
-          },
+          1n,
+          0x7fffffffffffffffn,
+          0x00000000ffffffffn,
+          0x00000001ffffffffn,
+          -0x8000000000000000n,
+          -0x01n,
+          -0x00000000ffffffffn,
+          -0x00000001ffffffffn,
         ];
+        const expected = Buffer.alloc(8);
 
         for (const fixture of fixtures) {
-          expect(tools.writeInt64(arr, 0, fixture.value, "LE")).toEqual(8);
-          expect(arr).toEqual(fixture.expect);
+          expected.writeBigInt64LE(fixture, 0);
+          expect(tools.writeInt64(arr, 0, fixture, "LE")).toEqual(8);
+          expect(arr).toEqual(Uint8Array.from(expected));
         }
 
         for (const fixture of fixtures) {
-          expect(tools.writeInt64(arr, 0, fixture.value, "BE")).toEqual(8);
-          expect(arr).toEqual(fixture.expect.reverse());
+          expected.writeBigInt64BE(fixture, 0);
+          expect(tools.writeInt64(arr, 0, fixture, "BE")).toEqual(8);
+          expect(arr).toEqual(Uint8Array.from(expected));
         }
       });
 
@@ -637,32 +544,24 @@ describe(`Uint8Array tools`, () => {
         const arr = new Uint8Array(8);
 
         const fixtures = [
-          {
-            value: 1n,
-            expect: 1n,
-          },
-          {
-            value: 0x7fffffffffffffffn,
-            expect: 0x7fffffffffffffffn,
-          },
-          {
-            value: -0x8000000000000000n,
-            expect: -0x8000000000000000n,
-          },
-          {
-            value: -0x01n,
-            expect: -0x01n,
-          },
+          1n,
+          0x7fffffffffffffffn,
+          0x00000000ffffffffn,
+          0x00000001ffffffffn,
+          -0x8000000000000000n,
+          -0x01n,
+          -0x00000000ffffffffn,
+          -0x00000001ffffffffn,
         ];
 
         for (const fixture of fixtures) {
-          tools.writeInt64(arr, 0, fixture.value, "LE");
-          expect(tools.readInt64(arr, 0, "LE")).toEqual(fixture.expect);
+          tools.writeInt64(arr, 0, fixture, "LE");
+          expect(tools.readInt64(arr, 0, "LE")).toEqual(fixture);
         }
 
         for (const fixture of fixtures) {
-          tools.writeInt64(arr, 0, fixture.value, "BE");
-          expect(tools.readInt64(arr, 0, "BE")).toEqual(fixture.expect);
+          tools.writeInt64(arr, 0, fixture, "BE");
+          expect(tools.readInt64(arr, 0, "BE")).toEqual(fixture);
         }
       });
 
