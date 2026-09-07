@@ -23,10 +23,12 @@ export function compare(v1, v2) {
     return Buffer.from(v1).compare(Buffer.from(v2));
 }
 function checkReadOffset(buffer, offset, byteLength) {
-    // Direct Uint8Array indexing returns undefined for invalid offsets, while
-    // Node.js Buffer throws.
+    // Direct Uint8Array indexing does not validate these values, while Node.js
+    // Buffer throws.
     if (!Number.isInteger(offset) ||
+        !Number.isInteger(byteLength) ||
         offset < 0 ||
+        byteLength < 0 ||
         offset + byteLength > buffer.length) {
         throw new Error("Offset is outside the bounds of Uint8Array");
     }
