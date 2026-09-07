@@ -7,7 +7,8 @@
     "noUnusedParameters": true,
     "noPropertyAccessFromIndexSignature": true,
     "moduleResolution": "node",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "types": ["node", "jest"]
   },
   "include": ["ts_src/*.ts"],
   "exclude": [
