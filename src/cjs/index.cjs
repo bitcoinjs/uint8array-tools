@@ -33,6 +33,15 @@ function compare(v1, v2) {
     return Buffer.from(v1).compare(Buffer.from(v2));
 }
 exports.compare = compare;
+function checkReadOffset(buffer, offset, byteLength) {
+    // Direct Uint8Array indexing returns undefined for invalid offsets, while
+    // Node.js Buffer throws.
+    if (!Number.isInteger(offset) ||
+        offset < 0 ||
+        offset + byteLength > buffer.length) {
+        throw new Error("Offset is outside the bounds of Uint8Array");
+    }
+}
 function writeUInt8(buffer, offset, value) {
     if (offset + 1 > buffer.length) {
         throw new Error("Offset is outside the bounds of Uint8Array");
@@ -95,53 +104,69 @@ function writeUInt64(buffer, offset, value, littleEndian) {
 }
 exports.writeUInt64 = writeUInt64;
 function readUInt8(buffer, offset) {
-    if (offset + 1 > buffer.length) {
-        throw new Error("Offset is outside the bounds of Uint8Array");
-    }
-    const buf = Buffer.from(buffer);
-    return buf.readUInt8(offset);
+    checkReadOffset(buffer, offset, 1);
+    return buffer[offset];
 }
 exports.readUInt8 = readUInt8;
 function readUInt16(buffer, offset, littleEndian) {
-    if (offset + 2 > buffer.length) {
-        throw new Error("Offset is outside the bounds of Uint8Array");
-    }
+    checkReadOffset(buffer, offset, 2);
     littleEndian = littleEndian.toUpperCase();
-    const buf = Buffer.from(buffer);
-    if (littleEndian === "LE") {
-        return buf.readUInt16LE(offset);
-    }
-    else {
-        return buf.readUInt16BE(offset);
-    }
+    // Match Node.js Buffer's implementation by expressing each byte's
+    // positional value.
+    return littleEndian === "LE"
+        ? buffer[offset] + buffer[offset + 1] * 2 ** 8
+        : buffer[offset] * 2 ** 8 + buffer[offset + 1];
 }
 exports.readUInt16 = readUInt16;
 function readUInt32(buffer, offset, littleEndian) {
-    if (offset + 4 > buffer.length) {
-        throw new Error("Offset is outside the bounds of Uint8Array");
-    }
+    checkReadOffset(buffer, offset, 4);
     littleEndian = littleEndian.toUpperCase();
-    const buf = Buffer.from(buffer);
-    if (littleEndian === "LE") {
-        return buf.readUInt32LE(offset);
-    }
-    else {
-        return buf.readUInt32BE(offset);
-    }
+    // Multiplication preserves the unsigned range; bitwise operators coerce
+    // values to signed int32.
+    return littleEndian === "LE"
+        ? buffer[offset] +
+            buffer[offset + 1] * 2 ** 8 +
+            buffer[offset + 2] * 2 ** 16 +
+            buffer[offset + 3] * 2 ** 24
+        : buffer[offset] * 2 ** 24 +
+            buffer[offset + 1] * 2 ** 16 +
+            buffer[offset + 2] * 2 ** 8 +
+            buffer[offset + 3];
 }
 exports.readUInt32 = readUInt32;
 function readUInt64(buffer, offset, littleEndian) {
-    if (offset + 8 > buffer.length) {
-        throw new Error("Offset is outside the bounds of Uint8Array");
-    }
+    checkReadOffset(buffer, offset, 8);
     littleEndian = littleEndian.toUpperCase();
-    const buf = Buffer.from(buffer);
+    let lo;
+    let hi;
+    // As in Node.js Buffer's implementation, compose exact 32-bit halves before
+    // converting to BigInt. This needs only two BigInt conversions instead of one
+    // conversion and shift per byte.
     if (littleEndian === "LE") {
-        return buf.readBigUInt64LE(offset);
+        lo =
+            buffer[offset] +
+                buffer[offset + 1] * 2 ** 8 +
+                buffer[offset + 2] * 2 ** 16 +
+                buffer[offset + 3] * 2 ** 24;
+        hi =
+            buffer[offset + 4] +
+                buffer[offset + 5] * 2 ** 8 +
+                buffer[offset + 6] * 2 ** 16 +
+                buffer[offset + 7] * 2 ** 24;
     }
     else {
-        return buf.readBigUInt64BE(offset);
+        hi =
+            buffer[offset] * 2 ** 24 +
+                buffer[offset + 1] * 2 ** 16 +
+                buffer[offset + 2] * 2 ** 8 +
+                buffer[offset + 3];
+        lo =
+            buffer[offset + 4] * 2 ** 24 +
+                buffer[offset + 5] * 2 ** 16 +
+                buffer[offset + 6] * 2 ** 8 +
+                buffer[offset + 7];
     }
+    return (BigInt(hi) << 32n) + BigInt(lo);
 }
 exports.readUInt64 = readUInt64;
 function writeInt8(buffer, offset, value) {
@@ -206,49 +231,72 @@ function writeInt64(buffer, offset, value, littleEndian) {
 }
 exports.writeInt64 = writeInt64;
 function readInt8(buffer, offset) {
-    if (offset + 1 > buffer.length) {
-        throw new Error("Offset is outside the bounds of Uint8Array");
-    }
-    const buf = Buffer.from(buffer);
-    return buf.readInt8(offset);
+    checkReadOffset(buffer, offset, 1);
+    const val = buffer[offset];
+    // Convert from two's complement explicitly instead of using Node.js
+    // Buffer's branchless sign-extension expression.
+    return val < 0x80 ? val : val - 0x100;
 }
 exports.readInt8 = readInt8;
 function readInt16(buffer, offset, littleEndian) {
-    if (offset + 2 > buffer.length) {
-        throw new Error("Offset is outside the bounds of Uint8Array");
-    }
+    checkReadOffset(buffer, offset, 2);
     littleEndian = littleEndian.toUpperCase();
-    if (littleEndian === "LE") {
-        return Buffer.from(buffer).readInt16LE(offset);
-    }
-    else {
-        return Buffer.from(buffer).readInt16BE(offset);
-    }
+    const val = littleEndian === "LE"
+        ? buffer[offset] + buffer[offset + 1] * 2 ** 8
+        : buffer[offset] * 2 ** 8 + buffer[offset + 1];
+    // Convert from two's complement explicitly instead of using Node.js
+    // Buffer's branchless sign-extension expression.
+    return val < 0x8000 ? val : val - 0x10000;
 }
 exports.readInt16 = readInt16;
 function readInt32(buffer, offset, littleEndian) {
-    if (offset + 4 > buffer.length) {
-        throw new Error("Offset is outside the bounds of Uint8Array");
-    }
+    checkReadOffset(buffer, offset, 4);
     littleEndian = littleEndian.toUpperCase();
-    if (littleEndian === "LE") {
-        return Buffer.from(buffer).readInt32LE(offset);
-    }
-    else {
-        return Buffer.from(buffer).readInt32BE(offset);
-    }
+    // Node.js Buffer's implementation shifts only the most-significant byte so
+    // JavaScript sign-extends it.
+    return littleEndian === "LE"
+        ? buffer[offset] +
+            buffer[offset + 1] * 2 ** 8 +
+            buffer[offset + 2] * 2 ** 16 +
+            (buffer[offset + 3] << 24)
+        : (buffer[offset] << 24) +
+            buffer[offset + 1] * 2 ** 16 +
+            buffer[offset + 2] * 2 ** 8 +
+            buffer[offset + 3];
 }
 exports.readInt32 = readInt32;
 function readInt64(buffer, offset, littleEndian) {
-    if (offset + 8 > buffer.length) {
-        throw new Error("Offset is outside the bounds of Uint8Array");
-    }
+    checkReadOffset(buffer, offset, 8);
     littleEndian = littleEndian.toUpperCase();
+    let lo;
+    let hi;
+    // Node.js Buffer's implementation makes hi a signed int32. Combining signed
+    // hi with unsigned lo produces the 64-bit two's-complement value without an
+    // extra BigInt correction.
     if (littleEndian === "LE") {
-        return Buffer.from(buffer).readBigInt64LE(offset);
+        lo =
+            buffer[offset] +
+                buffer[offset + 1] * 2 ** 8 +
+                buffer[offset + 2] * 2 ** 16 +
+                buffer[offset + 3] * 2 ** 24;
+        hi =
+            buffer[offset + 4] +
+                buffer[offset + 5] * 2 ** 8 +
+                buffer[offset + 6] * 2 ** 16 +
+                (buffer[offset + 7] << 24);
     }
     else {
-        return Buffer.from(buffer).readBigInt64BE(offset);
+        hi =
+            (buffer[offset] << 24) +
+                buffer[offset + 1] * 2 ** 16 +
+                buffer[offset + 2] * 2 ** 8 +
+                buffer[offset + 3];
+        lo =
+            buffer[offset + 4] * 2 ** 24 +
+                buffer[offset + 5] * 2 ** 16 +
+                buffer[offset + 6] * 2 ** 8 +
+                buffer[offset + 7];
     }
+    return (BigInt(hi) << 32n) + BigInt(lo);
 }
 exports.readInt64 = readInt64;

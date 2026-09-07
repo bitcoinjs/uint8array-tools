@@ -392,6 +392,59 @@ describe(`Uint8Array tools`, () => {
         );
       });
 
+      it("should read integers from Buffer and Uint8Array views", () => {
+        const bytes = [0xaa, 0x80, 1, 2, 3, 4, 5, 6, 7, 0xbb];
+        const expected = Buffer.from(bytes.slice(1, 9));
+        const views: Uint8Array[] = [
+          Uint8Array.from(bytes).subarray(1, 9),
+          Buffer.from(bytes).subarray(1, 9),
+        ];
+
+        for (const view of views) {
+          expect(tools.readUInt8(view, 0)).toEqual(expected.readUInt8(0));
+          expect(tools.readInt8(view, 0)).toEqual(expected.readInt8(0));
+
+          expect(tools.readUInt16(view, 0, "LE")).toEqual(
+            expected.readUInt16LE(0)
+          );
+          expect(tools.readUInt16(view, 0, "BE")).toEqual(
+            expected.readUInt16BE(0)
+          );
+          expect(tools.readInt16(view, 0, "LE")).toEqual(
+            expected.readInt16LE(0)
+          );
+          expect(tools.readInt16(view, 0, "BE")).toEqual(
+            expected.readInt16BE(0)
+          );
+
+          expect(tools.readUInt32(view, 0, "LE")).toEqual(
+            expected.readUInt32LE(0)
+          );
+          expect(tools.readUInt32(view, 0, "BE")).toEqual(
+            expected.readUInt32BE(0)
+          );
+          expect(tools.readInt32(view, 0, "LE")).toEqual(
+            expected.readInt32LE(0)
+          );
+          expect(tools.readInt32(view, 0, "BE")).toEqual(
+            expected.readInt32BE(0)
+          );
+
+          expect(tools.readUInt64(view, 0, "LE")).toEqual(
+            expected.readBigUInt64LE(0)
+          );
+          expect(tools.readUInt64(view, 0, "BE")).toEqual(
+            expected.readBigUInt64BE(0)
+          );
+          expect(tools.readInt64(view, 0, "LE")).toEqual(
+            expected.readBigInt64LE(0)
+          );
+          expect(tools.readInt64(view, 0, "BE")).toEqual(
+            expected.readBigInt64BE(0)
+          );
+        }
+      });
+
       it("should throw an error if the offset is out of bounds", () => {
         const arr = new Uint8Array(10);
 
@@ -626,4 +679,27 @@ describe(`Uint8Array tools`, () => {
       });
     });
   }
+
+  it("node reads should reject invalid numeric offsets", () => {
+    const bytes = new Uint8Array(8);
+
+    for (const offset of [-1, 0.5, NaN, Infinity]) {
+      const reads = [
+        () => node.readUInt8(bytes, offset),
+        () => node.readUInt16(bytes, offset, "LE"),
+        () => node.readUInt32(bytes, offset, "LE"),
+        () => node.readUInt64(bytes, offset, "LE"),
+        () => node.readInt8(bytes, offset),
+        () => node.readInt16(bytes, offset, "LE"),
+        () => node.readInt32(bytes, offset, "LE"),
+        () => node.readInt64(bytes, offset, "LE"),
+      ];
+
+      for (const read of reads) {
+        expect(read).toThrowError(
+          new Error("Offset is outside the bounds of Uint8Array")
+        );
+      }
+    }
+  });
 });
